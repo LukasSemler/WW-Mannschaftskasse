@@ -1,10 +1,84 @@
 <template>
+  <TransitionRoot as="template" :show="showBezahlt">
+    <Dialog as="div" class="relative z-10" @close="showBezahlt = false">
+      <TransitionChild
+        as="template"
+        enter="ease-out duration-300"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="ease-in duration-200"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+        >
+          <TransitionChild
+            as="template"
+            enter="ease-out duration-300"
+            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            enter-to="opacity-100 translate-y-0 sm:scale-100"
+            leave="ease-in duration-200"
+            leave-from="opacity-100 translate-y-0 sm:scale-100"
+            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          >
+            <DialogPanel
+              class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+            >
+              <div>
+                <div
+                  class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
+                >
+                  <CheckIcon class="h-6 w-6 text-green-600" aria-hidden="true" />
+                </div>
+                <div class="mt-3 text-center sm:mt-5">
+                  <DialogTitle as="h3" class="text-base font-semibold leading-6 text-gray-900"
+                    >Strafe bezahlt</DialogTitle
+                  >
+                  <div class="mt-2">
+                    <p class="text-sm text-gray-500">Wie hat der Spieler die Starfe bezahlt</p>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                <button
+                  type="button"
+                  class="inline-flex w-full justify-center rounded-md bg-wwGreen px-3 py-5 text-lg font-semibold text-white shadow-sm hover:bg-wwDarkGreen sm:col-start-2"
+                  @click="showBezahlt = false"
+                >
+                  <CurrencyEuroIcon class="-ml-0.5 h-7 w-7 mr-2" aria-hidden="true" />
+                  Bar
+                </button>
+                <button
+                  type="button"
+                  class="mt-3 inline-flex w-full justify-center rounded-md bg-wwGreen px-3 py-5 text-lg font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-wwDarkGreen sm:col-start-1 sm:mt-0"
+                  @click="showBezahlt = false"
+                  ref="cancelButtonRef"
+                >
+                  <CreditCardIcon class="-ml-0.5 h-7 w-7 mr-2" aria-hidden="true" />
+                  Karte
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
   <div class="min-h-full">
     <Disclosure as="nav" class="bg-wwGreen" v-slot="{ open }">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 items-center justify-between">
+        <div class="flex h-20 items-center justify-between">
           <div class="flex items-center">
-            <div class="flex-shrink-0"></div>
+            <div class="flex-shrink-0">
+              <img class="block h-16 w-auto lg:hidden" src="/logo1.png" alt="Westwien Logo" />
+              <img class="hidden h-16 w-auto lg:block" src="/logo1.png" alt="Westwien Logo" />
+            </div>
             <div class="hidden md:block">
               <div class="ml-10 flex items-baseline space-x-4">
                 <a
@@ -25,17 +99,8 @@
           </div>
           <div class="hidden md:block">
             <div class="ml-4 flex items-center md:ml-6">
-              <button
-                type="button"
-                class="relative rounded-full bg-wwGreen p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
-              >
-                <span class="absolute -inset-1.5" />
-                <span class="sr-only">View notifications</span>
-                <BellIcon class="h-6 w-6" aria-hidden="true" />
-              </button>
-
               <!-- Profile dropdown -->
-              <Menu as="div" class="relative ml-3">
+              <Menu as="div" class="relative ml-3" v-if="store.aktiverUser">
                 <div>
                   <MenuButton
                     class="relative flex max-w-xs items-center rounded-full bg-wwGreen text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
@@ -73,6 +138,13 @@
                   </MenuItems>
                 </transition>
               </Menu>
+              <button
+                type="button"
+                class="rounded-md bg-wwGray px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGray"
+                v-else
+              >
+                Login
+              </button>
             </div>
           </div>
           <div class="-mr-2 flex md:hidden">
@@ -115,14 +187,6 @@
               <div class="text-base font-medium text-white">{{ user.name }}</div>
               <div class="text-sm font-medium text-indigo-300">{{ user.email }}</div>
             </div>
-            <button
-              type="button"
-              class="relative ml-auto flex-shrink-0 rounded-full border-2 border-transparent bg-wwGreen p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
-            >
-              <span class="absolute -inset-1.5" />
-              <span class="sr-only">View notifications</span>
-              <BellIcon class="h-6 w-6" aria-hidden="true" />
-            </button>
           </div>
           <div class="mt-3 space-y-1 px-2">
             <DisclosureButton
@@ -145,7 +209,51 @@
     </header>
     <main>
       <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-        <!-- Your content -->
+        <!-- Head -->
+        <h4 class="text-center mt-5 text-gray-500">Aktueller Kassenstand:</h4>
+        <h1 class="text-center text-4xl font-bold mt-2 mb-5 text-gray-900">69.69€</h1>
+        <hr />
+        <!-- Body -->
+        <h2 class="text-lg font-bold mt-5 mx-3">Offene Beträge:</h2>
+        <ul role="list" class="divide-y divide-gray-100">
+          <li
+            v-for="amount in openAmounts.filter((elem) => elem.status === 'offen')"
+            :key="amount.id"
+            class="flex gap-x-4 py-5"
+          >
+            <img
+              class="h-12 w-12 flex-none rounded-full bg-gray-50"
+              :src="amount.imageUrl"
+              alt=""
+            />
+            <div class="flex-auto">
+              <div class="flex items-baseline justify-between gap-x-4">
+                <p class="text-sm font-semibold leading-6 text-gray-900">
+                  {{ amount.name }}, {{ amount.amount }}
+                  <span
+                    :class="[
+                      statuses[amount.status],
+                      'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3',
+                    ]"
+                  >
+                    {{ amount.status }}
+                  </span>
+                </p>
+
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-x-2 rounded-md bg-wwGreen px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen mr-2"
+                  v-if="amount.status === 'offen'"
+                  @click="showBezahlt = true"
+                >
+                  <CheckIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
+                  Bezahlt
+                </button>
+              </div>
+              <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.content }}</p>
+            </div>
+          </li>
+        </ul>
       </div>
     </main>
   </div>
@@ -161,11 +269,62 @@ import {
   MenuItem,
   MenuItems,
 } from '@headlessui/vue';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { CheckIcon, CreditCardIcon, CurrencyEuroIcon } from '@heroicons/vue/20/solid';
+import { ref } from 'vue';
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
 import { useRouter } from 'vue-router';
+import { wwStore } from '../store/wwStore.js';
 
 const router = useRouter();
+const store = wwStore();
+
+let showBezahlt = ref(false);
+
+const statuses = {
+  gezahlt: 'text-green-500 bg-green-50 ring-green-600/20',
+  offen: 'text-red-600 bg-red-50 ring-red-600/20',
+};
+
+const openAmounts = [
+  {
+    id: 1,
+    name: 'Simon Schmidt',
+    imageUrl: '/account.png',
+    content: 'Besoffen zum Training',
+    dateTime: '2023-03-04T15:54Z',
+    status: 'offen',
+    amount: '5€',
+  },
+  {
+    id: 2,
+    name: 'Tobi Bachmann',
+    imageUrl: '/account.png',
+    content: 'Dresscode Freitag',
+    dateTime: '2023-03-03T14:02Z',
+    status: 'offen',
+    amount: '5€',
+  },
+  {
+    id: 3,
+    name: 'Moritz Steiner',
+    imageUrl: '/account.png',
+    content: 'Dresscode Freitag',
+    dateTime: '2023-03-03T13:23Z',
+    status: 'offen',
+    amount: '5€',
+  },
+  {
+    id: 4,
+    name: 'Max Correa',
+    imageUrl: '/account.png',
+    content: 'Field Goal im Training',
+    dateTime: '2023-03-02T21:13Z',
+    status: 'gezahlt',
+    amount: '5€',
+  },
+];
 
 const user = {
   name: 'Tom Cook',
@@ -180,9 +339,5 @@ const navigation = [
   { name: 'Statistik', path: '/stats', current: false },
 ];
 
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
-];
+const userNavigation = [{ name: 'Sign out', href: '#' }];
 </script>

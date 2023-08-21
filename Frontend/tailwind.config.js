@@ -8,6 +8,7 @@ export default {
         wwDarkGreen: '#6B8F28',
         wwLightGreen: '#A4DB3D',
         wwGray: '#2c3234',
+        wwDarkGray: '#1E2224',
       },
     },
   },

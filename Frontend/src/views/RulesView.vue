@@ -2,9 +2,12 @@
   <div class="min-h-full">
     <Disclosure as="nav" class="bg-wwGreen" v-slot="{ open }">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 items-center justify-between">
+        <div class="flex h-20 items-center justify-between">
           <div class="flex items-center">
-            <div class="flex-shrink-0"></div>
+            <div class="flex-shrink-0">
+              <img class="block h-16 w-auto lg:hidden" src="/logo1.png" alt="Westwien Logo" />
+              <img class="hidden h-16 w-auto lg:block" src="/logo1.png" alt="Westwien Logo" />
+            </div>
             <div class="hidden md:block">
               <div class="ml-10 flex items-baseline space-x-4">
                 <a
@@ -25,17 +28,8 @@
           </div>
           <div class="hidden md:block">
             <div class="ml-4 flex items-center md:ml-6">
-              <button
-                type="button"
-                class="relative rounded-full bg-wwGreen p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
-              >
-                <span class="absolute -inset-1.5" />
-                <span class="sr-only">View notifications</span>
-                <BellIcon class="h-6 w-6" aria-hidden="true" />
-              </button>
-
               <!-- Profile dropdown -->
-              <Menu as="div" class="relative ml-3">
+              <Menu as="div" class="relative ml-3" v-if="store.aktiverUser">
                 <div>
                   <MenuButton
                     class="relative flex max-w-xs items-center rounded-full bg-wwGreen text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
@@ -68,6 +62,13 @@
                   </MenuItems>
                 </transition>
               </Menu>
+              <button
+                type="button"
+                class="rounded-md bg-wwGray px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGray"
+                v-else
+              >
+                Login
+              </button>
             </div>
           </div>
           <div class="-mr-2 flex md:hidden">
@@ -110,14 +111,6 @@
               <div class="text-base font-medium text-white">{{ user.name }}</div>
               <div class="text-sm font-medium text-indigo-300">{{ user.email }}</div>
             </div>
-            <button
-              type="button"
-              class="relative ml-auto flex-shrink-0 rounded-full border-2 border-transparent bg-wwGreen p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
-            >
-              <span class="absolute -inset-1.5" />
-              <span class="sr-only">View notifications</span>
-              <BellIcon class="h-6 w-6" aria-hidden="true" />
-            </button>
           </div>
           <div class="mt-3 space-y-1 px-2">
             <DisclosureButton
@@ -140,7 +133,7 @@
     </header>
     <main>
       <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-        <!-- Show all rules and hqw much they cost if you break them -->
+        <!-- Show all rules and how much they cost if you break them -->
         <p class="mx-5 mb-7">
           Hier findet ihr alle Regeln von der Mannschaftskasse und die dazugehörigen Preise. Wen
           eine neue Regeln hinzugefügt wird gebe ich euch im Training bescheid. Wenn ihr Vorschläge
@@ -181,10 +174,12 @@ import {
   MenuItem,
   MenuItems,
 } from '@headlessui/vue';
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { useRouter } from 'vue-router';
+import { wwStore } from '../store/wwStore.js';
 
 const router = useRouter();
+const store = wwStore();
 
 const user = {
   name: 'Tom Cook',
@@ -294,9 +289,5 @@ const rules = [
   },
 ];
 
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
-];
+const userNavigation = [{ name: 'Sign out', href: '#' }];
 </script>

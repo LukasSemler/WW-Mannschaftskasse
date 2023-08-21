@@ -1,12 +1,12 @@
-import view1 from '../views/view1.vue';
+import HomeView from '../views/HomeView.vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 const router = createRouter({
   history: createWebHashHistory(),
 
   routes: [
-    { path: '/', component: view1 },
-    { path: '/view2', component: () => import('../views/view2.vue') },
+    { path: '/', component: HomeView },
+    { path: '/rules', component: () => import('../views/RulesView.vue') },
   ],
 });
 

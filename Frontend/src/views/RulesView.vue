@@ -78,8 +78,8 @@
             >
               <span class="absolute -inset-0.5" />
               <span class="sr-only">Open main menu</span>
-              <Bars3Icon v-if="!open" class="block h-6 w-6" aria-hidden="true" />
-              <XMarkIcon v-else class="block h-6 w-6" aria-hidden="true" />
+              <Bars3Icon v-if="!open" class="block h-6 w-6 text-wwGray" aria-hidden="true" />
+              <XMarkIcon v-else class="block h-6 w-6 text-wwGray" aria-hidden="true" />
             </DisclosureButton>
           </div>
         </div>
@@ -102,14 +102,13 @@
             >{{ item.name }}</DisclosureButton
           >
         </div>
-        <div class="border-t border-indigo-700 pb-3 pt-4">
+        <div class="border-t border-wwGreen pb-3 pt-4" v-if="store.aktiverUser">
           <div class="flex items-center px-5">
             <div class="flex-shrink-0">
               <img class="h-10 w-10 rounded-full" :src="user.imageUrl" alt="" />
             </div>
             <div class="ml-3">
               <div class="text-base font-medium text-white">{{ user.name }}</div>
-              <div class="text-sm font-medium text-indigo-300">{{ user.email }}</div>
             </div>
           </div>
           <div class="mt-3 space-y-1 px-2">

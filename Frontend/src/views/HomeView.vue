@@ -150,12 +150,12 @@
           <div class="-mr-2 flex md:hidden">
             <!-- Mobile menu button -->
             <DisclosureButton
-              class="relative inline-flex items-center justify-center rounded-md bg-wwGreen p-2 text-indigo-200 hover:bg-wwLightGreen hover:bg-opacity-75 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
+              class="relative inline-flex items-center justify-center rounded-md bg-wwGreen p-2 text-indigo-200 hover:bg-wwLightGreen hover:bg-opacity-75 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
             >
               <span class="absolute -inset-0.5" />
               <span class="sr-only">Open main menu</span>
-              <Bars3Icon v-if="!open" class="block h-6 w-6" aria-hidden="true" />
-              <XMarkIcon v-else class="block h-6 w-6" aria-hidden="true" />
+              <Bars3Icon v-if="!open" class="block h-6 w-6 text-wwGray" aria-hidden="true" />
+              <XMarkIcon v-else class="block h-6 w-6 text-wwGray" aria-hidden="true" />
             </DisclosureButton>
           </div>
         </div>
@@ -178,14 +178,13 @@
             >{{ item.name }}</DisclosureButton
           >
         </div>
-        <div class="border-t border-indigo-700 pb-3 pt-4">
+        <div class="border-t border-wwDarkGreen pb-3 pt-4" v-if="store.aktiverUser">
           <div class="flex items-center px-5">
             <div class="flex-shrink-0">
               <img class="h-10 w-10 rounded-full" :src="user.imageUrl" alt="" />
             </div>
             <div class="ml-3">
               <div class="text-base font-medium text-white">{{ user.name }}</div>
-              <div class="text-sm font-medium text-indigo-300">{{ user.email }}</div>
             </div>
           </div>
           <div class="mt-3 space-y-1 px-2">
@@ -203,8 +202,15 @@
     </Disclosure>
 
     <header class="bg-white shadow">
-      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
         <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Home</h1>
+        <!-- TODO Change that only a admin can to this -->
+        <button
+          type="button"
+          class="rounded-full bg-wwGreen p-2 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          <PlusIcon class="h-5 w-5" aria-hidden="true" />
+        </button>
       </div>
     </header>
     <main>
@@ -239,7 +245,7 @@
                     {{ amount.status }}
                   </span>
                 </p>
-
+                <!-- TODO Change that only a admin can to this -->
                 <button
                   type="button"
                   class="inline-flex items-center gap-x-2 rounded-md bg-wwGreen px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen mr-2"
@@ -270,7 +276,7 @@ import {
   MenuItems,
 } from '@headlessui/vue';
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
-import { CheckIcon, CreditCardIcon, CurrencyEuroIcon } from '@heroicons/vue/20/solid';
+import { CheckIcon, CreditCardIcon, CurrencyEuroIcon, PlusIcon } from '@heroicons/vue/20/solid';
 import { ref } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 

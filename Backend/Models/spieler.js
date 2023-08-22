@@ -24,9 +24,12 @@ const spielerBekommenDB = async () => {
   if (!spielerRows[0]) return null;
   obj.spieler = spielerRows;
 
-  const { rows: insgesamtSummeRows } = await query(`SELECT SUM(z.betrag) from zahlungen_tbl z`);
+  const { rows: insgesamtSummeRows } = await query(`
+  SELECT SUM(betrag) as sum
+  from zahlungen_tbl
+  WHERE bezahlt = true;`);
   if (!insgesamtSummeRows[0]) return null;
-  obj.insgesamtSumme = insgesamtSummeRows[0].sum;
+  obj.insgesamtEingezahlteSumme = insgesamtSummeRows[0].sum;
 
   return obj;
 };

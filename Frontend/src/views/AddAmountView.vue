@@ -277,7 +277,7 @@
               </h3>
             </div>
             <div>
-              <div class="-mt-px flex divide-x divide-gray-200">
+              <div class="-mt-px flex divide-x divide-gray-200 cursor-pointer">
                 <div class="flex w-0 flex-1">
                   <a
                     @click="addNewAmount(player)"
@@ -307,7 +307,6 @@ import {
   MenuItems,
 } from '@headlessui/vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
-import { CheckIcon } from '@heroicons/vue/24/outline';
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { PlusIcon } from '@heroicons/vue/20/solid';
 import { useRouter } from 'vue-router';

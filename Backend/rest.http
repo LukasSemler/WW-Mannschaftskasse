@@ -8,6 +8,7 @@ Content-Type: application/json
 {
     "vorname": "TestVorname",
     "nachname": "TestNachname",
+    "email": "test@mail.at",
     "profilbildUrl": "https://blog.hubspot.de/hubfs/Germany/Blog_images/Ideen%20perfektes%20Profilbild.jpg"
 }
 

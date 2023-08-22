@@ -38,8 +38,8 @@ const spielerBekommenDB = async () => {
 const spielerErstellenDB = async (neuerSpieler) => {
   //Spieler in DB anlegen
   const { rows } = await query(
-    'INSERT INTO spieler_tbl (vorname, nachname, profilbild_url) VALUES ($1, $2, $3) RETURNING *',
-    [neuerSpieler.vorname, neuerSpieler.nachname, neuerSpieler.profilbildUrl],
+    'INSERT INTO spieler_tbl (vorname, nachname, email, profilbild_url) VALUES ($1, $2, $3, $4) RETURNING *',
+    [neuerSpieler.vorname, neuerSpieler.nachname, neuerSpieler.email, neuerSpieler.profilbildUrl],
   );
 
   if (!rows[0]) return null;

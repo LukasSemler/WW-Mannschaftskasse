@@ -207,8 +207,9 @@
         <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Home</h1>
         <!-- TODO Change that only a admin can to this -->
         <button
+          @click="router.push('/addAmount')"
           type="button"
-          class="rounded-full bg-wwGreen p-2 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          class="rounded-full bg-wwGreen p-2 text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           <PlusIcon class="h-5 w-5" aria-hidden="true" />
         </button>

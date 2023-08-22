@@ -4,8 +4,15 @@ import {
   testController,
   spielerErstellenController,
   spielerLoeschenController,
-  spielerBekommenController
+  spielerBekommenController,
 } from '../Controllers/spieler.js';
+
+import {
+  spielerZahlungBekommenController,
+  spielerZahlungErstellenController,
+  spielerZahlungBezahlenController,
+  spielerZahlungLoeschenController,
+} from '../Controllers/zahlung.js';
 
 const router = express.Router();
 
@@ -19,6 +26,10 @@ router.get('/spieler', asyncHandler(spielerBekommenController));
 router.post('/spieler', asyncHandler(spielerErstellenController));
 router.delete('/spieler/:id', asyncHandler(spielerLoeschenController));
 
-
+//Zahlung-Routen
+router.get('/zahlung/:s_id', asyncHandler(spielerZahlungBekommenController));
+router.post('/zahlung', asyncHandler(spielerZahlungErstellenController));
+router.patch('/zahlung/:z_id', asyncHandler(spielerZahlungBezahlenController));
+router.delete('/zahlung/:z_id', asyncHandler(spielerZahlungLoeschenController));
 
 export default router;

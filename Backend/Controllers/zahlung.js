@@ -7,11 +7,8 @@ import {
 
 //Zahlung von Spieler bekommen
 const spielerZahlungBekommenController = async (req, res) => {
-  const { s_id } = req.params;
-  console.log(`ID: ${s_id}`);
-
   //Spieler in DB löschen
-  const dbResult = await spielerZahlungBekommenDB(s_id);
+  const dbResult = await spielerZahlungBekommenDB();
 
   //Löschstatus ausgeben
   if (dbResult) return res.status(200).json(dbResult);
@@ -49,7 +46,7 @@ const spielerZahlungLoeschenController = async (req, res) => {
 const spielerZahlungBezahlenController = async (req, res) => {
   const { z_id } = req.params;
   //Spieler in DB löschen
-  const dbResult = await spielerZahlungBezahlenDB(z_id);
+  const dbResult = await spielerZahlungBezahlenDB(z_id, req.body);
 
   //Löschstatus ausgeben
   if (dbResult) return res.status(200).json(dbResult);

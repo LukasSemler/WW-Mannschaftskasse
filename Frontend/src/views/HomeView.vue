@@ -40,7 +40,7 @@
                     >Strafe bezahlt</DialogTitle
                   >
                   <div class="mt-2">
-                    <p class="text-sm text-gray-500">Wie hat der Spieler die Starfe bezahlt</p>
+                    <p class="text-sm text-gray-500">Wie hat der Spieler die Strafe bezahlt</p>
                   </div>
                 </div>
               </div>
@@ -48,7 +48,7 @@
                 <button
                   type="button"
                   class="inline-flex w-full justify-center rounded-md bg-wwGreen px-3 py-5 text-lg font-semibold text-white shadow-sm hover:bg-wwDarkGreen sm:col-start-2"
-                  @click="showBezahlt = false"
+                  @click="bezahlt('bar')"
                 >
                   <CurrencyEuroIcon class="-ml-0.5 h-7 w-7 mr-2" aria-hidden="true" />
                   Bar
@@ -56,7 +56,7 @@
                 <button
                   type="button"
                   class="mt-3 inline-flex w-full justify-center rounded-md bg-wwGreen px-3 py-5 text-lg font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-wwDarkGreen sm:col-start-1 sm:mt-0"
-                  @click="showBezahlt = false"
+                  @click="bezahlt('karte')"
                   ref="cancelButtonRef"
                 >
                   <CreditCardIcon class="-ml-0.5 h-7 w-7 mr-2" aria-hidden="true" />
@@ -225,40 +225,38 @@
         <h2 class="text-lg font-bold mt-5 mx-3">Offene Beträge:</h2>
         <ul role="list" class="divide-y divide-gray-100">
           <li
-            v-for="amount in openAmounts.filter((elem) => elem.status === 'offen')"
+            v-for="amount in openAmounts.filter((elem) => elem.bezahlt === false)"
             :key="amount.id"
             class="flex gap-x-4 py-5"
           >
             <img
               class="h-12 w-12 flex-none rounded-full bg-gray-50"
-              :src="amount.imageUrl"
+              :src="amount.profilbild_url"
               alt=""
             />
             <div class="flex-auto">
               <div class="flex items-baseline justify-between gap-x-4">
                 <p class="text-sm font-semibold leading-6 text-gray-900">
-                  {{ amount.name }}, {{ amount.amount }}
+                  {{ amount.vorname }} {{ amount.nachname }},
+                  <span class="font-bold mx-3">{{ amount.betrag }}€</span>
                   <span
-                    :class="[
-                      statuses[amount.status],
-                      'rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3',
-                    ]"
+                    class="text-red-600 bg-red-50 ring-red-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
                   >
-                    {{ amount.status }}
+                    Offen
                   </span>
                 </p>
                 <!-- TODO Change that only a admin can to this -->
                 <button
                   type="button"
                   class="inline-flex items-center gap-x-2 rounded-md bg-wwGreen px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen mr-2"
-                  v-if="amount.status === 'offen'"
-                  @click="showBezahlt = true"
+                  v-if="amount.bezahlt === false"
+                  @click="showModal(amount)"
                 >
                   <CheckIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
                   Bezahlt
                 </button>
               </div>
-              <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.content }}</p>
+              <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.grund }}</p>
             </div>
           </li>
         </ul>
@@ -268,6 +266,7 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import {
   Disclosure,
   DisclosureButton,
@@ -279,7 +278,7 @@ import {
 } from '@headlessui/vue';
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { CheckIcon, CreditCardIcon, CurrencyEuroIcon, PlusIcon } from '@heroicons/vue/20/solid';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
 import { useRouter } from 'vue-router';
@@ -289,51 +288,41 @@ const router = useRouter();
 const store = wwStore();
 
 let showBezahlt = ref(false);
-let open = ref(true);
+let activeAmount = ref({});
 
-const statuses = {
-  gezahlt: 'text-green-500 bg-green-50 ring-green-600/20',
-  offen: 'text-red-600 bg-red-50 ring-red-600/20',
-};
+onMounted(async () => {
+  await getData();
+});
 
-const openAmounts = [
-  {
-    id: 1,
-    name: 'Simon Schmidt',
-    imageUrl: '/account.png',
-    content: 'Besoffen zum Training',
-    dateTime: '2023-03-04T15:54Z',
-    status: 'offen',
-    amount: '5€',
-  },
-  {
-    id: 2,
-    name: 'Tobi Bachmann',
-    imageUrl: '/account.png',
-    content: 'Dresscode Freitag',
-    dateTime: '2023-03-03T14:02Z',
-    status: 'offen',
-    amount: '5€',
-  },
-  {
-    id: 3,
-    name: 'Moritz Steiner',
-    imageUrl: '/account.png',
-    content: 'Dresscode Freitag',
-    dateTime: '2023-03-03T13:23Z',
-    status: 'offen',
-    amount: '5€',
-  },
-  {
-    id: 4,
-    name: 'Max Correa',
-    imageUrl: '/account.png',
-    content: 'Field Goal im Training',
-    dateTime: '2023-03-02T21:13Z',
-    status: 'gezahlt',
-    amount: '5€',
-  },
-];
+async function getData() {
+  const { data } = await axios.get('http://localhost:2410/zahlung');
+  console.log(data);
+
+  openAmounts.value = data;
+}
+
+function showModal(amount) {
+  activeAmount.value = amount;
+  showBezahlt.value = true;
+}
+
+async function bezahlt(type) {
+  try {
+    await axios.patch(`http://localhost:2410/zahlung/${activeAmount.value.z_id}`, {
+      bezahlt: true,
+      zahlungsart: type,
+    });
+
+    showBezahlt.value = false;
+
+    await getData();
+  } catch (error) {
+    console.log('Error');
+  }
+}
+// ------------------------------
+
+const openAmounts = ref([]);
 
 const user = {
   name: 'Tom Cook',

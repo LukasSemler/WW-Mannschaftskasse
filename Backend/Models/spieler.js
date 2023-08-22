@@ -17,9 +17,10 @@ const spielerBekommenDB = async () => {
 
   const { rows: spielerRows } = await query(
     `SELECT sp.*, SUM(zt.betrag) as zuzahlen
-    from spieler_tbl sp
-    JOIN zahlungen_tbl zt on sp.s_id = zt.fk_s_id
-    GROUP BY sp.s_id;`,
+from spieler_tbl sp
+         LEFT JOIN zahlungen_tbl zt on sp.s_id = zt.fk_s_id
+WHERE isadmin = false
+GROUP BY sp.s_id, sp.nachname ORDER BY sp.nachname ASC;`,
   );
   if (!spielerRows[0]) return null;
   obj.spieler = spielerRows;

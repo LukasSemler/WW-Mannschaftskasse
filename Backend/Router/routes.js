@@ -27,7 +27,7 @@ router.post('/spieler', asyncHandler(spielerErstellenController));
 router.delete('/spieler/:id', asyncHandler(spielerLoeschenController));
 
 //Zahlung-Routen
-router.get('/zahlung/:s_id', asyncHandler(spielerZahlungBekommenController));
+router.get('/zahlung', asyncHandler(spielerZahlungBekommenController));
 router.post('/zahlung', asyncHandler(spielerZahlungErstellenController));
 router.patch('/zahlung/:z_id', asyncHandler(spielerZahlungBezahlenController));
 router.delete('/zahlung/:z_id', asyncHandler(spielerZahlungLoeschenController));

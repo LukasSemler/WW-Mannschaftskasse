@@ -1,1 +1,19 @@
 GET http://localhost:2410/test
+
+
+### Spieler erstellen
+POST http://localhost:2410/spieler
+Content-Type: application/json
+
+{
+    "vorname": "TestVorname",
+    "nachname": "TestNachname",
+    "profilbildUrl": "https://blog.hubspot.de/hubfs/Germany/Blog_images/Ideen%20perfektes%20Profilbild.jpg"
+}
+
+
+### Spieler löschen
+DELETE http://localhost:2410/spieler/7
+
+### Alle Spieler bekommen
+GET http://localhost:2410/spieler

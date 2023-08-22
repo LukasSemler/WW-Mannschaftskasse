@@ -1,0 +1,55 @@
+import { query, pool } from '../DB/index.js';
+import bcrypt from 'bcrypt';
+
+//TEST
+const testDB = async (email, password) => {
+  //Schauen ob User existiert
+  const { rows } = await query("SELECT 'HELLO WORLD' AS Msg");
+
+  if (!rows[0]) return null;
+
+  return rows[0];
+};
+
+//Spieler bekommen
+const spielerBekommenDB = async () => {
+  let obj = {};
+
+  const { rows: spielerRows } = await query(
+    `SELECT sp.*, SUM(zt.betrag) as zuzahlen
+    from spieler_tbl sp
+    JOIN zahlungen_tbl zt on sp.s_id = zt.fk_s_id
+    GROUP BY sp.s_id;`,
+  );
+  if (!spielerRows[0]) return null;
+  obj.spieler = spielerRows;
+
+  const { rows: insgesamtSummeRows } = await query(`SELECT SUM(z.betrag) from zahlungen_tbl z`);
+  if (!insgesamtSummeRows[0]) return null;
+  obj.insgesamtSumme = insgesamtSummeRows[0].sum;
+
+  return obj;
+};
+
+//Spieler erstellen
+const spielerErstellenDB = async (neuerSpieler) => {
+  //Spieler in DB anlegen
+  const { rows } = await query(
+    'INSERT INTO spieler_tbl (vorname, nachname, profilbild_url) VALUES ($1, $2, $3) RETURNING *',
+    [neuerSpieler.vorname, neuerSpieler.nachname, neuerSpieler.profilbildUrl],
+  );
+
+  if (!rows[0]) return null;
+  return rows[0];
+};
+
+//Spieler löschen
+const spielerLoeschenDB = async (s_id) => {
+  //Spieler in DB anlegen
+  const { rows } = await query('DELETE FROM spieler_tbl WHERE s_id = $1 RETURNING *', [s_id]);
+
+  if (!rows[0]) return null;
+  return rows[0];
+};
+
+export { testDB, spielerBekommenDB, spielerErstellenDB, spielerLoeschenDB };

@@ -12,7 +12,7 @@ import { query, pool } from '../DB/index.js';
 const spielerZahlungBekommenDB = async (s_id) => {
   //Schauen ob User existiert
   const { rows } = await query(
-    'SELECT z_id, bezahlt, betrag, grund, barzahlung, zeitpunkt, vorname, nachname, profilbild_url, isAdmin from zahlungen_tbl JOIN spieler_tbl st on st.s_id = zahlungen_tbl.fk_s_id',
+    'SELECT z_id, bezahlt, betrag, grund, barzahlung, zeitpunkt, vorname, nachname, profilbild_url, isAdmin from zahlungen_tbl JOIN spieler_tbl st on st.s_id = zahlungen_tbl.fk_s_id ORDER BY zeitpunkt DESC;',
   );
 
   if (!rows[0]) return null;

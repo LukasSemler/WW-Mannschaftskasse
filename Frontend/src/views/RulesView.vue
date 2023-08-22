@@ -13,6 +13,7 @@
                 <a
                   v-for="item in navigation"
                   :key="item.name"
+                  @click="router.push(item.path)"
                   :class="[
                     item.current
                       ? 'bg-wwDarkGreen text-white'
@@ -20,7 +21,6 @@
                     'rounded-md px-3 py-2 text-sm font-medium',
                   ]"
                   :aria-current="item.current ? 'page' : undefined"
-                  @click="router.push(item.path)"
                   >{{ item.name }}</a
                 >
               </div>
@@ -29,14 +29,18 @@
           <div class="hidden md:block">
             <div class="ml-4 flex items-center md:ml-6">
               <!-- Profile dropdown -->
-              <Menu as="div" class="relative ml-3" v-if="store.aktiverUser">
+              <Menu as="div" class="relative ml-3" v-if="store.getAktiverUser">
                 <div>
                   <MenuButton
-                    class="relative flex max-w-xs items-center rounded-full bg-wwGreen text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
+                    class="relative flex max-w-xs items-center rounded-full bg-wwGreen text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
                   >
                     <span class="absolute -inset-1.5" />
                     <span class="sr-only">Open user menu</span>
-                    <img class="h-8 w-8 rounded-full" :src="user.imageUrl" alt="" />
+                    <img
+                      class="h-8 w-8 rounded-full"
+                      :src="store.getAktiverUser.profilbild_url"
+                      alt=""
+                    />
                   </MenuButton>
                 </div>
                 <transition
@@ -50,7 +54,12 @@
                   <MenuItems
                     class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                   >
-                    <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
+                    <MenuItem
+                      v-for="item in userNavigation"
+                      @click="store.deleteAktivenUser"
+                      :key="item.name"
+                      v-slot="{ active }"
+                    >
                       <a
                         :class="[
                           active ? 'bg-gray-100' : '',
@@ -66,6 +75,7 @@
                 type="button"
                 class="rounded-md bg-wwGray px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGray"
                 v-else
+                @click="router.push('/login')"
               >
                 Login
               </button>
@@ -74,7 +84,7 @@
           <div class="-mr-2 flex md:hidden">
             <!-- Mobile menu button -->
             <DisclosureButton
-              class="relative inline-flex items-center justify-center rounded-md bg-wwGreen p-2 text-indigo-200 hover:bg-wwLightGreen hover:bg-opacity-75 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
+              class="relative inline-flex items-center justify-center rounded-md bg-wwGreen p-2 text-indigo-200 hover:bg-wwLightGreen hover:bg-opacity-75 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
             >
               <span class="absolute -inset-0.5" />
               <span class="sr-only">Open main menu</span>
@@ -102,13 +112,19 @@
             >{{ item.name }}</DisclosureButton
           >
         </div>
-        <div class="border-t border-wwGreen pb-3 pt-4" v-if="store.aktiverUser">
+        <div class="border-t border-wwDarkGreen pb-3 pt-4" v-if="store.getAktiverUser">
           <div class="flex items-center px-5">
             <div class="flex-shrink-0">
-              <img class="h-10 w-10 rounded-full" :src="user.imageUrl" alt="" />
+              <img
+                class="h-10 w-10 rounded-full"
+                :src="store.getAktiverUser.profilbild_url"
+                alt=""
+              />
             </div>
             <div class="ml-3">
-              <div class="text-base font-medium text-white">{{ user.name }}</div>
+              <div class="text-base font-medium text-white">
+                {{ store.getAktiverUser.vorname }} {{ store.getAktiverUser.nachname }}
+              </div>
             </div>
           </div>
           <div class="mt-3 space-y-1 px-2">
@@ -116,12 +132,20 @@
               v-for="item in userNavigation"
               :key="item.name"
               as="a"
-              :href="item.href"
+              @click="store.deleteAktivenUser"
               class="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-wwLightGreen hover:bg-opacity-75"
               >{{ item.name }}</DisclosureButton
             >
           </div>
         </div>
+        <button
+          type="button"
+          class="rounded-md bg-wwGray px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGray m-5"
+          v-else
+          @click="router.push('/login')"
+        >
+          Login
+        </button>
       </DisclosurePanel>
     </Disclosure>
 
@@ -179,13 +203,6 @@ import { wwStore } from '../store/wwStore.js';
 
 const router = useRouter();
 const store = wwStore();
-
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-};
 
 const navigation = [
   { name: 'Home', path: '/', current: false },

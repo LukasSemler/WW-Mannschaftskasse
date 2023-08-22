@@ -3,6 +3,7 @@ import {
   spielerBekommenDB,
   spielerErstellenDB,
   spielerLoeschenDB,
+  loginDB,
 } from '../Models/spieler.js';
 
 //Test-Controller
@@ -49,9 +50,18 @@ const spielerLoeschenController = async (req, res) => {
   return res.status(400).send('Beim Löschen des Spielers ist ein Fehler aufgetreten!');
 };
 
+const loginController = async (req, res) => {
+  const { email, password } = req.body;
+
+  const result = await loginDB(email, password);
+  if (result) return res.status(200).json(result);
+  return res.status(400).send('Beim Login ist ein Fehler aufgetreten!');
+};
+
 export {
   testController,
   spielerBekommenController,
   spielerErstellenController,
   spielerLoeschenController,
+  loginController,
 };

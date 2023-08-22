@@ -5,6 +5,7 @@ import {
   spielerErstellenController,
   spielerLoeschenController,
   spielerBekommenController,
+  loginController,
 } from '../Controllers/spieler.js';
 
 import {
@@ -25,6 +26,8 @@ router.get('/test', asyncHandler(testController));
 router.get('/spieler', asyncHandler(spielerBekommenController));
 router.post('/spieler', asyncHandler(spielerErstellenController));
 router.delete('/spieler/:id', asyncHandler(spielerLoeschenController));
+
+router.post('/login', asyncHandler(loginController))
 
 //Zahlung-Routen
 router.get('/zahlung', asyncHandler(spielerZahlungBekommenController));

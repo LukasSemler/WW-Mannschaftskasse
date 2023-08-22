@@ -56,4 +56,14 @@ const spielerLoeschenDB = async (s_id) => {
   return rows[0];
 };
 
-export { testDB, spielerBekommenDB, spielerErstellenDB, spielerLoeschenDB };
+const loginDB = async (email, password) => {
+  const { rows } = await query('SELECT * from spieler_tbl where email = $1 and passwort = $2', [
+    email,
+    password,
+  ]);
+
+  if (rows[0]) return rows[0];
+  return false;
+};
+
+export { testDB, spielerBekommenDB, spielerErstellenDB, spielerLoeschenDB, loginDB };

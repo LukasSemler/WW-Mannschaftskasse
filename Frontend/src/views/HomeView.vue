@@ -100,14 +100,18 @@
           <div class="hidden md:block">
             <div class="ml-4 flex items-center md:ml-6">
               <!-- Profile dropdown -->
-              <Menu as="div" class="relative ml-3" v-if="store.aktiverUser">
+              <Menu as="div" class="relative ml-3" v-if="store.getAktiverUser">
                 <div>
                   <MenuButton
-                    class="relative flex max-w-xs items-center rounded-full bg-wwGreen text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-600"
+                    class="relative flex max-w-xs items-center rounded-full bg-wwGreen text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
                   >
                     <span class="absolute -inset-1.5" />
                     <span class="sr-only">Open user menu</span>
-                    <img class="h-8 w-8 rounded-full" :src="user.imageUrl" alt="" />
+                    <img
+                      class="h-8 w-8 rounded-full"
+                      :src="store.getAktiverUser.profilbild_url"
+                      alt=""
+                    />
                   </MenuButton>
                 </div>
                 <transition
@@ -123,9 +127,9 @@
                   >
                     <MenuItem
                       v-for="item in userNavigation"
+                      @click="store.deleteAktivenUser"
                       :key="item.name"
                       v-slot="{ active }"
-                      @click="router.push(item.href)"
                     >
                       <a
                         :class="[
@@ -179,13 +183,19 @@
             >{{ item.name }}</DisclosureButton
           >
         </div>
-        <div class="border-t border-wwDarkGreen pb-3 pt-4" v-if="store.aktiverUser">
+        <div class="border-t border-wwDarkGreen pb-3 pt-4" v-if="store.getAktiverUser">
           <div class="flex items-center px-5">
             <div class="flex-shrink-0">
-              <img class="h-10 w-10 rounded-full" :src="user.imageUrl" alt="" />
+              <img
+                class="h-10 w-10 rounded-full"
+                :src="store.getAktiverUser.profilbild_url"
+                alt=""
+              />
             </div>
             <div class="ml-3">
-              <div class="text-base font-medium text-white">{{ user.name }}</div>
+              <div class="text-base font-medium text-white">
+                {{ store.getAktiverUser.vorname }} {{ store.getAktiverUser.nachname }}
+              </div>
             </div>
           </div>
           <div class="mt-3 space-y-1 px-2">
@@ -193,23 +203,31 @@
               v-for="item in userNavigation"
               :key="item.name"
               as="a"
-              :href="item.href"
+              @click="store.deleteAktivenUser"
               class="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-wwLightGreen hover:bg-opacity-75"
               >{{ item.name }}</DisclosureButton
             >
           </div>
         </div>
+        <button
+          type="button"
+          class="rounded-md bg-wwGray px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGray m-5"
+          v-else
+          @click="router.push('/login')"
+        >
+          Login
+        </button>
       </DisclosurePanel>
     </Disclosure>
 
     <header class="bg-white shadow">
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
         <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Home</h1>
-        <!-- TODO Change that only a admin can to this -->
         <button
+          v-if="store.getAktiverUser"
           @click="router.push('/addAmount')"
           type="button"
-          class="rounded-full bg-wwGreen p-2 text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          class="rounded-full bg-wwGreen p-2 text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwDarkGreen"
         >
           <PlusIcon class="h-5 w-5" aria-hidden="true" />
         </button>
@@ -219,18 +237,24 @@
       <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
         <!-- Head -->
         <h4 class="text-center mt-5 text-gray-500">Aktueller Kassenstand:</h4>
-        <h1 class="text-center text-4xl font-bold mt-2 mb-5 text-gray-900">69.69€</h1>
+        <h1 class="text-center text-4xl font-bold mt-2 mb-5 text-gray-900">
+          {{ Number(sum).toFixed(2) }}€
+        </h1>
         <hr />
         <!-- Body -->
         <h2 class="text-lg font-bold mt-5 mx-3">Offene Beträge:</h2>
-        <ul role="list" class="divide-y divide-gray-100">
+        <ul
+          role="list"
+          class="divide-y divide-gray-100"
+          v-if="openAmounts.filter((elem) => elem.bezahlt === false).length > 0"
+        >
           <li
             v-for="amount in openAmounts.filter((elem) => elem.bezahlt === false)"
             :key="amount.id"
             class="flex gap-x-4 py-5"
           >
             <img
-              class="h-12 w-12 flex-none rounded-full bg-gray-50"
+              class="h-12 w-12 flex-none rounded-full bg-gray-50 ml-2"
               :src="amount.profilbild_url"
               alt=""
             />
@@ -238,7 +262,7 @@
               <div class="flex items-baseline justify-between gap-x-4">
                 <p class="text-sm font-semibold leading-6 text-gray-900">
                   {{ amount.vorname }} {{ amount.nachname }},
-                  <span class="font-bold mx-3">{{ amount.betrag }}€</span>
+                  <span class="font-bold mx-3">{{ Number(amount.betrag).toFixed(2) }}€</span>
                   <span
                     class="text-red-600 bg-red-50 ring-red-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
                   >
@@ -249,12 +273,46 @@
                 <button
                   type="button"
                   class="inline-flex items-center gap-x-2 rounded-md bg-wwGreen px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen mr-2"
-                  v-if="amount.bezahlt === false"
+                  v-if="amount.bezahlt === false && store.getAktiverUser"
                   @click="showModal(amount)"
                 >
                   <CheckIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
                   Bezahlt
                 </button>
+              </div>
+              <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.grund }}</p>
+            </div>
+          </li>
+        </ul>
+        <h1 class="text-center text-xl my-4 text-gray-900" v-else>Alles wurde bezahlt</h1>
+
+        <hr />
+        <h2 class="text-lg font-bold mt-5 mx-3">Alle Beträge:</h2>
+        <ul role="list" class="divide-y divide-gray-100">
+          <li v-for="amount in openAmounts" :key="amount.id" class="flex gap-x-4 py-5">
+            <img
+              class="h-12 w-12 flex-none rounded-full bg-gray-50 ml-2"
+              :src="amount.profilbild_url"
+              alt=""
+            />
+            <div class="flex-auto">
+              <div class="flex items-baseline justify-between gap-x-4">
+                <p class="text-sm font-semibold leading-6 text-gray-900">
+                  {{ amount.vorname }} {{ amount.nachname }},
+                  <span class="font-bold mx-3">{{ Number(amount.betrag).toFixed(2) }}€</span>
+                  <span
+                    v-if="amount.bezahlt === false"
+                    class="text-red-600 bg-red-50 ring-red-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
+                  >
+                    Offen
+                  </span>
+                  <span
+                    v-else
+                    class="text-green-500 bg-green-50 ring-green-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
+                  >
+                    Bezahlt
+                  </span>
+                </p>
               </div>
               <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.grund }}</p>
             </div>
@@ -289,16 +347,19 @@ const store = wwStore();
 
 let showBezahlt = ref(false);
 let activeAmount = ref({});
+let sum = ref(0.0);
 
 onMounted(async () => {
   await getData();
 });
 
 async function getData() {
-  const { data } = await axios.get('http://localhost:2410/zahlung');
+  const { data } = await axios.get('/zahlung');
   console.log(data);
-
   openAmounts.value = data;
+
+  const { data: data2 } = await axios.get('/spieler');
+  sum.value = data2.insgesamtEingezahlteSumme;
 }
 
 function showModal(amount) {
@@ -308,7 +369,7 @@ function showModal(amount) {
 
 async function bezahlt(type) {
   try {
-    await axios.patch(`http://localhost:2410/zahlung/${activeAmount.value.z_id}`, {
+    await axios.patch(`/zahlung/${activeAmount.value.z_id}`, {
       bezahlt: true,
       zahlungsart: type,
     });
@@ -324,12 +385,6 @@ async function bezahlt(type) {
 
 const openAmounts = ref([]);
 
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-};
 
 const navigation = [
   { name: 'Home', path: '/', current: true },

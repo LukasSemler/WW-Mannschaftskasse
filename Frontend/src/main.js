@@ -3,6 +3,12 @@ import { createPinia } from 'pinia';
 import './style.css';
 import App from './App.vue';
 import router from './router/index.js';
+import axios from 'axios';
+
+//Base-URL axios
+if (location.origin === 'http://localhost:8080' || location.origin === 'http://localhost:5050') {
+  axios.defaults.baseURL = 'http://localhost:2410';
+}
 
 const VueApp = createApp(App);
 const piniaStore = createPinia();

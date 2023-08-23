@@ -35,20 +35,57 @@
                     >Neue Strafe</DialogTitle
                   >
                   <div class="mt-2 text-left">
-                    <div>
-                      <label for="email" class="block text-sm font-medium leading-6 text-gray-900"
-                        >Grund</label
+                    <Combobox as="div" v-model="selectedStrafe">
+                      <ComboboxLabel class="block text-sm font-medium leading-6 text-gray-900"
+                        >Assigned to</ComboboxLabel
                       >
-                      <div class="mt-2">
-                        <input
-                          v-model="state.reason"
-                          type="text"
-                          name="reason"
-                          id="reason"
-                          class="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-wwGreen sm:text-sm sm:leading-6"
+                      <div class="relative mt-2">
+                        <ComboboxInput
+                          class="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-10 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-wwGreen sm:text-sm sm:leading-6"
+                          @change="query = $event.target.value"
+                          :display-value="(strafe) => strafe?.name"
                         />
+                        <ComboboxButton
+                          class="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
+                        >
+                          <ChevronUpDownIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
+                        </ComboboxButton>
+
+                        <ComboboxOptions
+                          v-if="filteredStrafen.length > 0"
+                          class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+                        >
+                          <ComboboxOption
+                            v-for="strafe in filteredStrafen"
+                            :key="strafe.id"
+                            :value="strafe"
+                            as="template"
+                            v-slot="{ active, selected }"
+                          >
+                            <li
+                              :class="[
+                                'relative cursor-default select-none py-2 pl-3 pr-9',
+                                active ? 'bg-wwGreen text-white' : 'text-gray-900',
+                              ]"
+                            >
+                              <span :class="['block truncate', selected && 'font-semibold']">
+                                {{ strafe.name }}
+                              </span>
+
+                              <span
+                                v-if="selected"
+                                :class="[
+                                  'absolute inset-y-0 right-0 flex items-center pr-4',
+                                  active ? 'text-white' : 'text-wwGreen',
+                                ]"
+                              >
+                                <CheckIcon class="h-5 w-5" aria-hidden="true" />
+                              </span>
+                            </li>
+                          </ComboboxOption>
+                        </ComboboxOptions>
                       </div>
-                    </div>
+                    </Combobox>
 
                     <div class="mt-3">
                       <label for="price" class="block text-sm font-medium leading-6 text-gray-900"
@@ -61,6 +98,17 @@
                           <span class="text-gray-500 sm:text-sm">€</span>
                         </div>
                         <input
+                          v-if="selectedStrafe && selectedStrafe.price !== null"
+                          v-model="selectedStrafe.price"
+                          type="text"
+                          name="price"
+                          id="price"
+                          class="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-wwGreen sm:text-sm sm:leading-6"
+                          placeholder="0.00"
+                          aria-describedby="price-currency"
+                        />
+                        <input
+                          v-else
                           v-model="state.price"
                           type="text"
                           name="price"
@@ -90,7 +138,7 @@
                 <button
                   type="button"
                   class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                  @click="showModal = false"
+                  @click="hideModal"
                   ref="cancelButtonRef"
                 >
                   Cancel
@@ -188,7 +236,7 @@
           <div class="-mr-2 flex md:hidden">
             <!-- Mobile menu button -->
             <DisclosureButton
-              class="relative inline-flex items-center justify-center rounded-md bg-wwGreen p-2 text-indigo-200 hover:bg-wwLightGreen hover:bg-opacity-75 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
+              class="relative inline-flex items-center justify-center rounded-md bg-wwGreen p-2 text-lime-200 hover:bg-wwLightGreen hover:bg-opacity-75 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
             >
               <span class="absolute -inset-0.5" />
               <span class="sr-only">Open main menu</span>
@@ -312,7 +360,55 @@ import { PlusIcon } from '@heroicons/vue/20/solid';
 import { useRouter } from 'vue-router';
 import { wwStore } from '../store/wwStore.js';
 import axios from 'axios';
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
+
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
+import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxLabel,
+  ComboboxOption,
+  ComboboxOptions,
+} from '@headlessui/vue';
+
+const strafen = ref([
+  { id: 1, name: 'Zu spät kommen beim Training', price: null },
+  { id: 2, name: 'Zu spät kommen beim Match', price: null },
+  { id: 3, name: 'Nicht erscheinen im Training ohne Absage', price: 5 },
+  { id: 4, name: 'Training ohne Grund Absagen', price: 2.5 },
+  { id: 5, name: 'Besoffen zum Training', price: 5 },
+  { id: 6, name: 'Besoffen zum Match', price: 10 },
+  { id: 7, name: 'Kurze Socken im Training', price: 1 },
+  { id: 8, name: 'Kleidung vergessen', price: null },
+  { id: 9, name: 'Schuhe vergessen', price: 1 },
+  { id: 10, name: 'Keine Springschnur / Theraband / Ball', price: 1 },
+  { id: 11, name: 'Headshot Torwart', price: 1 },
+  { id: 12, name: 'Headshot Torwart (freier Wurf)', price: 1.5 },
+  { id: 13, name: 'Field Goal im Training', price: 0.5 },
+  { id: 14, name: 'Dumme rote Karte', price: 5 },
+  { id: 15, name: 'Dumme 2min', price: 2.5 },
+  { id: 16, name: 'Dresscode Freitag', price: 1 },
+  { id: 17, name: 'Dresscode vor einem Match', price: 2 },
+  { id: 18, name: 'Reden, während ein Trainer spricht', price: 1 },
+  { id: 19, name: 'Pick vergessen', price: 1 },
+  { id: 20, name: 'Dummes, unnötiges Foul im Training', price: 1 },
+  { id: 21, name: 'Nicht laufen gehen / Kraft', price: 2 },
+  { id: 22, name: 'Keine Wasserflasche', price: 1 },
+  { id: 23, name: 'Rülpsen im Training', price: 1 },
+  { id: 24, name: 'Furzen im Training', price: 1 },
+  { id: 25, name: 'Dress vergessen', price: 5 },
+]);
+
+const query = ref('');
+const selectedStrafe = ref(null);
+const filteredStrafen = computed(() =>
+  query.value === ''
+    ? strafen.value
+    : strafen.value.filter((strafe) => {
+        return strafe.name.toLowerCase().includes(query.value.toLowerCase());
+      }),
+);
 
 const router = useRouter();
 const store = wwStore();
@@ -341,23 +437,37 @@ function addNewAmount(player) {
 
 async function addAmountDB() {
   try {
+    //Check if selectedStrafe is null or if selectedStrafe.price is null and state.price is empty
     if (
-      state.price !== '' &&
-      state.reason !== '' &&
-      state.price.length > 0 &&
-      state.reason.length > 0
+      selectedStrafe.value === null ||
+      (selectedStrafe.value.price === null && state.price === '')
     ) {
-      const { data } = await axios.post('/zahlung', {
-        spielerID: activePlayer.value.s_id,
-        grund: state.reason,
-        betrag: state.price,
-      });
-      console.log(data);
-      showModal.value = false;
+      console.log('Error, nicht alle ausgefüllt');
     } else {
-      console.log('Error');
+      if (selectedStrafe.value.price !== null) {
+        await axios.post('/zahlung', {
+          spielerID: activePlayer.value.s_id,
+          grund: selectedStrafe.value.name,
+          betrag: selectedStrafe.value.price,
+        });
+      } else {
+        await axios.post('/zahlung', {
+          spielerID: activePlayer.value.s_id,
+          grund: selectedStrafe.value.name,
+          betrag: state.price,
+        });
+      }
+
+      hideModal();
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function hideModal() {
+  showModal.value = false;
+  selectedStrafe.value = null;
 }
 
 const navigation = [

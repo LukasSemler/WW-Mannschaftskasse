@@ -303,6 +303,10 @@ const rules = [
     description: 'Furzen im Training',
     price: '1€',
   },
+  {
+    description: 'Dress vergessen',
+    price: '5€',
+  },
 ];
 
 const userNavigation = [{ name: 'Sign out', href: '#' }];

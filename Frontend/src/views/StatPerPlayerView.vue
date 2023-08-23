@@ -151,7 +151,9 @@
 
     <header class="bg-white shadow">
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
-        <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Statistik</h1>
+        <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+          Statistik pro Spieler
+        </h1>
       </div>
     </header>
     <main>
@@ -160,11 +162,11 @@
         <div>
           <h3 class="text-xl font-semibold leading-6 text-gray-900 ml-2">Total</h3>
           <div class="flex flex-row justify-center w-full mb-12">
-            <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-1 lg:grid-cols-2">
+            <dl class="mt-5 grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2">
               <div
                 v-for="item in statsType"
                 :key="item.id"
-                class="relative overflow-hidden rounded-lg bg-white px-4 pb-1 pt-5 shadow sm:px-6 sm:pt-6 mx-12"
+                class="relative overflow-hidden rounded-lg bg-white px-4 pb-1 pt-5 shadow sm:px-6 sm:pt-6 mx-12 mt-3"
               >
                 <dt>
                   <div class="absolute rounded-md bg-wwGreen p-3">
@@ -199,42 +201,6 @@
               </div>
             </dl>
           </div>
-          <hr />
-          <h3 class="text-xl font-semibold leading-6 text-gray-900 ml-2 mt-5">Pro Spieler</h3>
-          <ul
-            role="list"
-            class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-5"
-          >
-            <li
-              v-for="(player, i) in players"
-              :key="i"
-              class="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow"
-            >
-              <div class="flex flex-1 flex-col p-8">
-                <img
-                  class="mx-auto h-32 w-32 flex-shrink-0 rounded-full object-cover"
-                  :src="player.profilbild_url"
-                  alt=""
-                />
-                <h3 class="mt-6 text-sm font-medium text-gray-900">
-                  {{ player.vorname }} {{ player.nachname }}
-                </h3>
-              </div>
-              <div>
-                <div class="-mt-px flex divide-x divide-gray-200 cursor-pointer">
-                  <div class="flex w-0 flex-1">
-                    <a
-                      @click="playerDetail(player)"
-                      class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
-                    >
-                      <ChartPieIcon class="h-7 w-7 text-wwGray" aria-hidden="true" />
-                      Statistik anzeigen
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
         </div>
       </div>
     </main>
@@ -253,7 +219,12 @@ import {
   MenuItems,
 } from '@headlessui/vue';
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
-import { CreditCardIcon, CurrencyEuroIcon, ChartPieIcon } from '@heroicons/vue/24/outline';
+import {
+  CreditCardIcon,
+  CurrencyEuroIcon,
+  XCircleIcon,
+  FunnelIcon,
+} from '@heroicons/vue/24/outline';
 import { reactive, onMounted, ref } from 'vue';
 
 import { useRouter } from 'vue-router';
@@ -261,6 +232,7 @@ import { wwStore } from '../store/wwStore.js';
 
 const router = useRouter();
 const store = wwStore();
+const playerID = router.currentRoute.value.params.id;
 
 const statsType = reactive([
   {
@@ -274,6 +246,18 @@ const statsType = reactive([
     name: 'Anzahl Bar bekommen',
     stat: '0',
     icon: CurrencyEuroIcon,
+  },
+  {
+    id: 3,
+    name: 'Offen',
+    stat: '0',
+    icon: XCircleIcon,
+  },
+  {
+    id: 3,
+    name: 'Total',
+    stat: '0',
+    icon: FunnelIcon,
   },
 ]);
 
@@ -292,26 +276,18 @@ const statsSumType = reactive([
   },
 ]);
 
-const players = ref([]);
-
 onMounted(async () => {
-  const { data } = await axios.get('/paymentType');
+  const { data } = await axios.get(`/paymentTypePlayer/${playerID}`);
+  console.log(data);
   statsType[0].stat = data[0].karte;
   statsType[1].stat = data[0].barzahlung;
+  statsType[2].stat = data[0].offen;
+  statsType[3].stat = data[0].total;
 
-  const { data: data2 } = await axios.get('/sumType');
+  const { data: data2 } = await axios.get(`/sumTypePlayer/${playerID}`);
   statsSumType[0].stat = data2[0].karte;
   statsSumType[1].stat = data2[0].barzahlung;
-
-  const { data: data3 } = await axios.get('/spieler');
-  console.log(data3);
-  players.value = data3.spieler;
 });
-
-function playerDetail(p) {
-  console.log(p.s_id);
-  router.push(`/statsPlayer/${p.s_id}`)
-}
 
 const navigation = [
   { name: 'Home', path: '/', current: false },

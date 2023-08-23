@@ -10,6 +10,11 @@ const router = createRouter({
     { path: '/login', component: () => import('../views/LoginUserView.vue') },
     { path: '/addAmount', component: () => import('../views/AddAmountView.vue') },
     { path: '/stats', component: () => import('../views/StatisticsView.vue') },
+    {
+      path: '/statsPlayer/:id',
+      component: () => import('../views/StatPerPlayerView.vue'),
+      params: true,
+    },
   ],
 });
 

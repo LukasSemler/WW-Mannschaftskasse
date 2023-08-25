@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot as="template" :show="showModal">
-    <Dialog as="div" class="relative z-10" @close="showModal = false">
+    <Dialog as="div" class="relative z-10" @close="showModal = true">
       <TransitionChild
         as="template"
         enter="ease-out duration-300"
@@ -398,6 +398,8 @@ const strafen = ref([
   { id: 23, name: 'Rülpsen im Training', price: 1 },
   { id: 24, name: 'Furzen im Training', price: 1 },
   { id: 25, name: 'Dress vergessen', price: 5 },
+  { id: 26, name: 'Schlechte Musik', price: null },
+  { id: 27, name: 'Anderes', price: null },
 ]);
 
 const query = ref('');

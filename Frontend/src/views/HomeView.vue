@@ -1,4 +1,108 @@
 <template>
+  <TransitionRoot as="template" :show="showModalAbzug">
+    <Dialog as="div" class="relative z-10" @close="showModalAbzug = true">
+      <TransitionChild
+        as="template"
+        enter="ease-out duration-300"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="ease-in duration-200"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+        >
+          <TransitionChild
+            as="template"
+            enter="ease-out duration-300"
+            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            enter-to="opacity-100 translate-y-0 sm:scale-100"
+            leave="ease-in duration-200"
+            leave-from="opacity-100 translate-y-0 sm:scale-100"
+            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          >
+            <DialogPanel
+              class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+            >
+              <div>
+                <div class="text-center sm:mt-5">
+                  <DialogTitle as="h1" class="font-semibold leading-6 text-gray-900 text-xl mb-5"
+                    >Neue Ausgabe</DialogTitle
+                  >
+                  <div class="mt-2 text-left">
+                    <label
+                      for="price"
+                      class="block text-sm font-medium leading-6 text-gray-900 mb-2"
+                      >Verwendungszweck</label
+                    >
+                    <input
+                      v-model="state.grund"
+                      type="text"
+                      name="grund"
+                      id="grund"
+                      class="block w-full rounded-md border-0 py-1.5 pl-3 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-wwGreen sm:text-sm sm:leading-6"
+                      placeholder="Verwendungszweck"
+                    />
+
+                    <div class="mt-3">
+                      <label for="price" class="block text-sm font-medium leading-6 text-gray-900"
+                        >Preis</label
+                      >
+                      <div class="relative mt-2 rounded-md shadow-sm">
+                        <div
+                          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+                        >
+                          <span class="text-gray-500 sm:text-sm">€</span>
+                        </div>
+                        <input
+                          autocomplete="off"
+                          v-model="state.price"
+                          type="text"
+                          name="price"
+                          id="price"
+                          class="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-wwGreen sm:text-sm sm:leading-6"
+                          placeholder="0.00"
+                          aria-describedby="price-currency"
+                        />
+                        <div
+                          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+                        >
+                          <span class="text-gray-500 sm:text-sm" id="price-currency">EUR</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                <button
+                  type="button"
+                  class="inline-flex w-full justify-center rounded-md bg-wwGreen px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwGreen sm:col-start-2"
+                  @click="addAusgabeDB"
+                >
+                  Hinzufügen
+                </button>
+                <button
+                  type="button"
+                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                  @click="hideModal"
+                  ref="cancelButtonRef"
+                >
+                  Cancel
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
   <TransitionRoot as="template" :show="showBezahlt">
     <Dialog as="div" class="relative z-10" @close="showBezahlt = false">
       <TransitionChild
@@ -223,14 +327,24 @@
     <header class="bg-white shadow">
       <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 flex justify-between">
         <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Home</h1>
-        <button
-          v-if="store.getAktiverUser"
-          @click="router.push('/addAmount')"
-          type="button"
-          class="rounded-full bg-wwGreen p-2 text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwDarkGreen"
-        >
-          <PlusIcon class="h-5 w-5" aria-hidden="true" />
-        </button>
+        <div class="row flex-row">
+          <button
+            v-if="store.getAktiverUser"
+            @click="router.push('/addAmount')"
+            type="button"
+            class="mr-3 rounded-full bg-wwGreen p-2 text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwDarkGreen"
+          >
+            <PlusIcon class="h-5 w-5" aria-hidden="true" />
+          </button>
+          <button
+            v-if="store.getAktiverUser"
+            @click="showModalAbzug = true"
+            type="button"
+            class="rounded-full bg-wwRed p-2 text-white shadow-sm hover:bg-wwDarkRed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwDarkGreen"
+          >
+            <MinusIcon class="h-5 w-5" aria-hidden="true" />
+          </button>
+        </div>
       </div>
     </header>
     <main>
@@ -262,7 +376,7 @@
               <div class="flex items-baseline justify-between gap-x-4">
                 <p class="text-sm font-semibold leading-6 text-gray-900">
                   {{ amount.vorname }} {{ amount.nachname }},
-                  <span class="font-bold mx-3">{{ Number(amount.betrag).toFixed(2) }}€</span>
+                  <span class="font-bold mr-2">{{ Number(amount.betrag).toFixed(2) }}€</span>
                   <span
                     class="text-red-600 bg-red-50 ring-red-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
                   >
@@ -285,6 +399,28 @@
           </li>
         </ul>
         <h1 class="text-center text-xl my-4 text-gray-900" v-else>Alles wurde bezahlt</h1>
+        <hr />
+        <h2 class="text-lg font-bold mt-5 mx-3">Letzte Ausgaben:</h2>
+        <ul role="list" class="divide-y divide-gray-100" v-if="abzVorhanden">
+          <li v-for="amount in abz" :key="amount.a_id" class="flex gap-x-4 py-5">
+            <span
+              class="h-12 w-12 overflow-hidden rounded-full bg-red-50 flex items-center justify-center"
+            >
+              <MinusIcon class="w-8 text-wwRed" aria-hidden="true" />
+            </span>
+            <div class="flex-auto">
+              <div class="flex items-baseline justify-between gap-x-4">
+                <p class="text-sm font-semibold leading-6 text-gray-900">
+                  <span class="font-bold mr-2">{{ Number(amount.amount).toFixed(2) }}€</span>
+                </p>
+              </div>
+              <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.reason }}</p>
+            </div>
+          </li>
+        </ul>
+        <h1 v-else class="my-4 mb-7 text-center font-bold text-xl text-gray-900">
+          Es wurden noch nix ausgegeben
+        </h1>
 
         <hr />
         <h2 class="text-lg font-bold mt-5 mx-3">Alle Beträge:</h2>
@@ -299,16 +435,16 @@
               <div class="flex items-baseline justify-between gap-x-4">
                 <p class="text-sm font-semibold leading-6 text-gray-900">
                   {{ amount.vorname }} {{ amount.nachname }},
-                  <span class="font-bold mx-3">{{ Number(amount.betrag).toFixed(2) }}€</span>
+                  <span class="font-bold mr-2">{{ Number(amount.betrag).toFixed(2) }}€</span>
                   <span
                     v-if="amount.bezahlt === false"
-                    class="text-red-600 bg-red-50 ring-red-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
+                    class="text-red-600 bg-red-50 ring-red-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'"
                   >
                     Offen
                   </span>
                   <span
                     v-else
-                    class="text-green-500 bg-green-50 ring-green-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
+                    class="text-green-500 bg-green-50 ring-green-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset'"
                   >
                     Bezahlt
                   </span>
@@ -335,8 +471,14 @@ import {
   MenuItems,
 } from '@headlessui/vue';
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
-import { CheckIcon, CreditCardIcon, CurrencyEuroIcon, PlusIcon } from '@heroicons/vue/20/solid';
-import { ref, onMounted } from 'vue';
+import {
+  CheckIcon,
+  CreditCardIcon,
+  CurrencyEuroIcon,
+  PlusIcon,
+  MinusIcon,
+} from '@heroicons/vue/20/solid';
+import { ref, onMounted, reactive } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
 import { useRouter } from 'vue-router';
@@ -346,8 +488,16 @@ const router = useRouter();
 const store = wwStore();
 
 let showBezahlt = ref(false);
+let showModalAbzug = ref(false);
+const state = reactive({
+  grund: '',
+  price: '',
+});
+
+let abz = ref([]);
 let activeAmount = ref({});
 let sum = ref(0.0);
+let abzVorhanden = ref(false);
 
 onMounted(async () => {
   await getData();
@@ -359,12 +509,26 @@ async function getData() {
   openAmounts.value = data;
 
   const { data: data2 } = await axios.get('/spieler');
+  console.log(data2);
   sum.value = data2.insgesamtEingezahlteSumme;
+
+  try {
+    const { data: data3 } = await axios.get('/ausgaben');
+    abz.value = data3;
+    abzVorhanden.value = true;
+  } catch (error) {
+    console.log(error);
+    abzVorhanden.value = false;
+  }
 }
 
 function showModal(amount) {
   activeAmount.value = amount;
   showBezahlt.value = true;
+}
+
+function hideModal() {
+  showModalAbzug.value = false;
 }
 
 async function bezahlt(type) {
@@ -381,10 +545,30 @@ async function bezahlt(type) {
     console.log('Error');
   }
 }
+
+async function addAusgabeDB(e) {
+  e.preventDefault();
+
+  if (state.grund === '' || state.price === '') {
+    return;
+  } else {
+    try {
+      await axios.post('/ausgaben', {
+        reason: state.grund,
+        amount: state.price,
+      });
+
+      showModalAbzug.value = false;
+
+      await getData();
+    } catch (error) {
+      console.log('Error');
+    }
+  }
+}
 // ------------------------------
 
 const openAmounts = ref([]);
-
 
 const navigation = [
   { name: 'Home', path: '/', current: true },

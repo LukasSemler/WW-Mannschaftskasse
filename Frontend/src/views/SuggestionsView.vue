@@ -1,4 +1,81 @@
 <template>
+  <TransitionRoot as="template" :show="showSuggestion">
+    <Dialog as="div" class="relative z-10" @close="showSuggestion = true">
+      <TransitionChild
+        as="template"
+        enter="ease-out duration-300"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="ease-in duration-200"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+      </TransitionChild>
+
+      <div class="fixed inset-0 z-10 overflow-y-auto">
+        <div
+          class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+        >
+          <TransitionChild
+            as="template"
+            enter="ease-out duration-300"
+            enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            enter-to="opacity-100 translate-y-0 sm:scale-100"
+            leave="ease-in duration-200"
+            leave-from="opacity-100 translate-y-0 sm:scale-100"
+            leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          >
+            <DialogPanel
+              class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+            >
+              <div>
+                <div class="text-center sm:mt-5">
+                  <DialogTitle as="h1" class="font-semibold leading-6 text-gray-900 text-xl mb-5"
+                    >Neuer Vorschlag</DialogTitle
+                  >
+                  <div class="text-left">
+                    <label
+                      for="suggestion"
+                      class="block text-sm font-medium leading-6 text-gray-900"
+                      >Vorschlag:</label
+                    >
+                    <div class="mt-2">
+                      <textarea
+                        v-model="state.sug"
+                        rows="4"
+                        name="suggestion"
+                        id="suggestion"
+                        class="pl-3 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-wwGreen sm:text-sm sm:leading-6"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                <button
+                  type="button"
+                  class="inline-flex w-full justify-center rounded-md bg-wwGreen px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwGreen sm:col-start-2"
+                  @click="addSuggestion"
+                >
+                  Hinzufügen
+                </button>
+                <button
+                  type="button"
+                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                  @click="hideModal"
+                  ref="cancelButtonRef"
+                >
+                  Cancel
+                </button>
+              </div>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </div>
+    </Dialog>
+  </TransitionRoot>
+
   <div class="min-h-full">
     <Disclosure as="nav" class="bg-wwGreen" v-slot="{ open }">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -150,44 +227,61 @@
     </Disclosure>
 
     <header class="bg-white shadow">
-      <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Regeln</h1>
+      <div class="flex mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 justify-between">
+        <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Vorschläge</h1>
+        <button
+          @click="showSuggestion = true"
+          type="button"
+          class="mx-3 rounded-full bg-wwGreen p-2 text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwDarkGreen"
+        >
+          <PlusIcon class="h-5 w-5" aria-hidden="true" />
+        </button>
       </div>
     </header>
     <main>
       <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
         <!-- Show all rules and how much they cost if you break them -->
         <p class="mx-5 mb-7">
-          Hier findet ihr alle Regeln von der Mannschaftskasse und die dazugehörigen Preise. Wen
-          eine neue Regeln hinzugefügt wird gebe ich euch im Training bescheid. Wenn ihr Vorschläge
-          für neue Regeln habt gebt mir bitte auch bescheid, dann könne wir abstimmen, ob diese neue
-          Regel hinzugefügt wird, oder nicht.
+          Hier könnt ihr Vorschläge was wir am Ende der Saison mit dem ganzen Geld machen könnten.
+          Wenn ihr einen Vorschlag habt, schreibt ihn einfach rein. Ihr könnt dann für die anderen
+          Vorschläge abstimmen, ob sie euch gefallen oder nicht
         </p>
 
-        <ul role="list" class="divide-y divide-gray-100 mx-5">
-          <li
-            v-for="(rule, i) in rules"
-            :key="i"
-            class="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 py-5 sm:flex-nowrap"
-          >
-            <div>
-              <p class="text-sm font-semibold leading-6 text-gray-900">
-                {{ rule.description }}
-              </p>
-            </div>
-            <dl class="flex w-full flex-none justify-between gap-x-8 sm:w-auto">
-              <div class="flex gap-x-2.5">
-                <dd class="text-sm leading-6 text-gray-900">{{ rule.price }}</dd>
+        <ul role="list" class="divide-y divide-gray-100 ml-5 mr-4" v-if="suggestions.length > 0">
+          <li v-for="(sug, i) in suggestions" :key="i" class="flex gap-x-4 py-5">
+            <div class="flex-auto">
+              <div class="flex justify-between gap-x-4">
+                <p class="text-sm font-semibold leading-6 text-gray-900 mb-3">
+                  <span
+                    @click="addLike(sug)"
+                    class="mr-3 inline-flex items-center gap-x-1.5 rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700"
+                  >
+                    <HandThumbUpIcon class="h-5 w-5"></HandThumbUpIcon>
+                    {{ sug.likes }}
+                  </span>
+                  <span
+                    @click="addDislike(sug)"
+                    class="inline-flex items-center gap-x-1.5 rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-700"
+                  >
+                    <HandThumbDownIcon class="h-5 w-5"></HandThumbDownIcon>
+                    {{ sug.dislikes }}
+                  </span>
+                </p>
               </div>
-            </dl>
+              <p class="mt-1 text-sm leading-6 text-gray-600">{{ sug.suggestion }}</p>
+            </div>
           </li>
         </ul>
+        <h1 v-else class="text-center text-xl font-bold mt-7">
+          Es sind noch keine Vorschläge vorhanden
+        </h1>
       </div>
     </main>
   </div>
 </template>
 
 <script setup>
+import axios from 'axios';
 import {
   Disclosure,
   DisclosureButton,
@@ -197,117 +291,63 @@ import {
   MenuItem,
   MenuItems,
 } from '@headlessui/vue';
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline';
+import { HandThumbUpIcon, HandThumbDownIcon, PlusIcon } from '@heroicons/vue/20/solid';
 import { useRouter } from 'vue-router';
 import { wwStore } from '../store/wwStore.js';
+import { ref, onMounted, reactive } from 'vue';
 
 const router = useRouter();
 const store = wwStore();
 
+const suggestions = ref([]);
+
+let showSuggestion = ref(false);
+const state = reactive({
+  sug: '',
+});
+
+onMounted(async () => {
+  await getData();
+});
+
+async function getData() {
+  const { data } = await axios.get('/suggestions');
+  console.log(data);
+  suggestions.value = data;
+}
+
+async function addLike(sug) {
+  await axios.patch(`/suggestionsL/${sug.sg_id}`);
+  await getData();
+}
+
+async function addDislike(sug) {
+  await axios.patch(`/suggestionsD/${sug.sg_id}`);
+  await getData();
+}
+
+async function addSuggestion(e) {
+  e.preventDefault();
+  if (state.sug.length > 0) {
+    await axios.post('/suggestions', {
+      suggestion: state.sug,
+    });
+    await getData();
+    hideModal();
+  }
+}
+
+function hideModal() {
+  state.sug = '';
+  showSuggestion.value = false;
+}
 const navigation = [
   { name: 'Home', path: '/', current: false },
-  { name: 'Regeln', path: '/rules', current: true },
+  { name: 'Regeln', path: '/rules', current: false },
   { name: 'Statistik', path: '/stats', current: false },
-  { name: 'Suggestions', path: '/suggestions', current: false },
-];
-
-const rules = [
-  {
-    description:
-      'Zu spät kommen beim Training (Man muss 10min vor Trainingsbeginn in der Halle sein)',
-    price: '50c pro Minute',
-  },
-  { description: 'Zu spät kommen beim Match (Ab Treffpunkt)', price: '1€ pro Minute' },
-  {
-    description:
-      'Nicht erscheinen im Training ohne Absage (Absagen gelten bis 2h vor dem Training)',
-    price: '5€',
-  },
-  {
-    description: 'Training ohne Grund Absagen',
-    price: '2.5€',
-  },
-  {
-    description: 'Besoffen zum Training',
-    price: '5€',
-  },
-  {
-    description: 'Besoffen zum Match',
-    price: '10€',
-  },
-  {
-    description: 'Kurze Socken im Training',
-    price: '1€',
-  },
-  {
-    description: 'Kleidung vergessen (zu Hause oder im Training)',
-    price: '50c pro Kleidungsstück',
-  },
-  {
-    description: 'Schuhe vergessen (zu Hause oder im Training)',
-    price: '2€',
-  },
-  {
-    description: 'Keine Springschnur / Theraband / Ball',
-    price: '1€',
-  },
-  {
-    description: 'Headshot Torwart',
-    price: '1€',
-  },
-  {
-    description: 'Headshot Torwart bei einem freien Wurf',
-    price: '1.5€',
-  },
-  {
-    description: 'Field Goal im Training (zählt wenn der Ball das Holz berührt)',
-    price: '50c',
-  },
-  {
-    description: 'Dumme rote Karte',
-    price: '5€',
-  },
-  {
-    description: 'Dumme 2min (Mit Schiri diskutieren, Schiri beleidigen, etc.)',
-    price: '2.5€',
-  },
-  {
-    description: 'Dresscode Freitag',
-    price: '1€',
-  },
-  {
-    description: 'Dresscode vor einem Match (alle grünes T-Shirt)',
-    price: '2€',
-  },
-  { description: 'Reden, während ein Trainer spricht', price: '1€' },
-  {
-    description: 'Pick vergessen bzw. keines mehr da (gilt nur für den Zuständigen)',
-    price: '1€',
-  },
-  {
-    description: 'Dummes, unnötiges Foul im Training',
-    price: '1€',
-  },
-  {
-    description: 'Nicht laufen gehen, kein Krafttraining machen',
-    price: '2€',
-  },
-  {
-    description: 'Keine Wasserflasche',
-    price: '1€',
-  },
-  {
-    description: 'Rülpsen im Training',
-    price: '1€',
-  },
-  {
-    description: 'Furzen im Training',
-    price: '1€',
-  },
-  {
-    description: 'Dress vergessen',
-    price: '5€',
-  },
+  { name: 'Suggestions', path: '/suggestions', current: true },
 ];
 
 const userNavigation = [{ name: 'Sign out', href: '#' }];

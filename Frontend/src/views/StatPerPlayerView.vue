@@ -293,6 +293,7 @@ const navigation = [
   { name: 'Home', path: '/', current: false },
   { name: 'Regeln', path: '/rules', current: false },
   { name: 'Statistik', path: '/stats', current: true },
+  { name: 'Suggestions', path: '/suggestions', current: false },
 ];
 
 const userNavigation = [{ name: 'Sign out', href: '#' }];

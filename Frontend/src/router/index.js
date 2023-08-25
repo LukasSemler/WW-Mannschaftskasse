@@ -15,6 +15,7 @@ const router = createRouter({
       component: () => import('../views/StatPerPlayerView.vue'),
       params: true,
     },
+    { path: '/suggestions', component: () => import('../views/SuggestionsView.vue') },
   ],
 });
 

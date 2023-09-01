@@ -262,7 +262,8 @@ const rules = [
     price: '1.5€',
   },
   {
-    description: 'Field Goal im Training (zählt wenn der Ball das Holz berührt)',
+    description:
+      'Field Goal im Training (zählt wenn der Ball das Holz berührt, freier Wurf ohne Kontakt)',
     price: '50c',
   },
   {

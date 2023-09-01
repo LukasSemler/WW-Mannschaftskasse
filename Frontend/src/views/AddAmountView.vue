@@ -401,6 +401,7 @@ const strafen = ref([
   { id: 25, name: 'Dress vergessen', price: 5.0 },
   { id: 26, name: 'Schlechte Musik', price: null },
   { id: 27, name: 'Anderes', price: null },
+  { id: 28, name: 'Trainer beleidigen', price: 2.5 },
 ]);
 
 const query = ref('');
@@ -471,6 +472,7 @@ async function addAmountDB() {
 function hideModal() {
   showModal.value = false;
   selectedStrafe.value = null;
+  state.price = '';
 }
 
 const navigation = [

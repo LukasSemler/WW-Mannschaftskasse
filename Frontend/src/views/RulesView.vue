@@ -163,6 +163,8 @@
           für neue Regeln habt gebt mir bitte auch bescheid, dann könne wir abstimmen, ob diese neue
           Regel hinzugefügt wird, oder nicht.
         </p>
+        <p class="mx-5">Meine Kontodaten für die Überweisung findet ihr hier:</p>
+        <p class="mx-5 font-bold mb-7">IBAN: AT48 2011 1296 1060 0801</p>
 
         <ul role="list" class="divide-y divide-gray-100 mx-5">
           <li

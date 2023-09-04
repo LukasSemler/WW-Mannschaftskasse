@@ -402,6 +402,7 @@ const strafen = ref([
   { id: 26, name: 'Schlechte Musik', price: null },
   { id: 27, name: 'Anderes', price: null },
   { id: 28, name: 'Trainer beleidigen', price: 2.5 },
+  { id: 29, name: 'Spende', price: null },
 ]);
 
 const query = ref('');

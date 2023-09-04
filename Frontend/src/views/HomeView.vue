@@ -394,6 +394,15 @@
                   Bezahlt
                 </button>
               </div>
+              <p
+                class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600"
+                v-if="Number(amount.remaining) > 7"
+              >
+                <span class="font-bold">{{ amount.remaining }} Tage</span> verbleiben
+              </p>
+              <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600" v-else>
+                <span class="font-bold text-red-600">{{ amount.remaining }} Tage</span> verbleiben
+              </p>
               <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.grund }}</p>
             </div>
           </li>

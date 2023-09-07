@@ -6,7 +6,11 @@ import router from './router/index.js';
 import axios from 'axios';
 
 //Base-URL axios
-if (location.origin === 'http://localhost:8080' || location.origin === 'http://localhost:5050') {
+if (
+  location.origin === 'http://localhost:8080' ||
+  location.origin === 'http://localhost:5050' ||
+  location.origin === 'http://localhost:4173'
+) {
   axios.defaults.baseURL = 'http://localhost:2410';
 }
 

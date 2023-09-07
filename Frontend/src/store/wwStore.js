@@ -7,7 +7,9 @@ function SaveState(abmelden) {
   //   State speichern
   if (store.aktiverUser != null) {
     localStorage.setItem(store.$id, JSON.stringify(store.$state));
-  } else if (abmelden) {
+  } 
+  // Abmelden und User aus Localstorage löschen
+  else if (abmelden) {
     localStorage.setItem(store.$id, JSON.stringify(store.$state));
   }
 }

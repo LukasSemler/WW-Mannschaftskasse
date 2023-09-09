@@ -42,13 +42,13 @@ export default defineConfig({
             type: 'image/png',
           },
         ],
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        theme_color: '#9BCF39',
+        background_color: '#9BCF39',
         display: 'standalone',
       },
     }),
   ],
   build: {
-    // outDir: path.resolve(__dirname, '../Backend/public'),
+    outDir: path.resolve(__dirname, '../Backend/public'),
   },
 });

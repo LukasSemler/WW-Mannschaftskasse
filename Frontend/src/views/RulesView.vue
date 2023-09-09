@@ -268,11 +268,11 @@ const rules = [
   },
   {
     description: 'Dumme rote Karte',
-    price: '5€',
+    price: '15€',
   },
   {
     description: 'Dumme 2min (Mit Schiri diskutieren, Schiri beleidigen, etc.)',
-    price: '2.5€',
+    price: '5€',
   },
   {
     description: 'Dresscode Freitag',

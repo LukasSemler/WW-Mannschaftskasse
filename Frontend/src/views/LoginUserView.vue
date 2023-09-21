@@ -66,6 +66,7 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { wwStore } from '../store/wwStore.js';
+import { openDB } from '../../node_modules/idb';
 
 const router = useRouter();
 const store = wwStore();
@@ -90,6 +91,22 @@ async function signin(e) {
     if (data) {
       store.setAktivenUser(data);
       console.log(data);
+
+      //Datenbank anlegen (FÜR OFFLNE) --> ZahlungenDB
+      if (!('indexedDB' in window)) return;
+
+      const db = await openDB('WW-Mannschaftskasse', 1, {
+        upgrade(Db, oldVersion, NewVersion, Transaction) {
+          //SETUP FÜR ZahlungenDB-ObjectStore
+          let store = Db.createObjectStore('Zahlungen_ObjectStore', {
+            keyPath: 'zahlung_ID',
+            autoIncrement: true,
+          });
+          store.createIndex('spielerID', 'spielerID', { unique: false }); //Key für SpielerID´s
+        },
+      });
+
+      //Weiterleitung auf HomeSeite
       router.push('/');
     } else {
       console.log('Error');

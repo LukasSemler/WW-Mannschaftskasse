@@ -19,12 +19,16 @@ export default defineConfig({
 
       // CustomServiceWorker
       strategies: 'injectManifest',
-      srcDir: 'src',
+      injectManifest: {
+        rollupFormat: 'iife',
+      },
+      srcDir: '/',
       filename: 'serviceWorker.js',
 
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpeg}'],
       },
+      includeAssets: ['**/*'],
 
       manifest: {
         name: 'WW-Mannschaftsverwaltung',
@@ -49,6 +53,6 @@ export default defineConfig({
     }),
   ],
   build: {
-    // outDir: path.resolve(__dirname, '../Backend/public'),
+    outDir: path.resolve(__dirname, '../Backend/public'),
   },
 });

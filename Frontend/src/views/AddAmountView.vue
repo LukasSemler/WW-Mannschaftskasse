@@ -233,7 +233,7 @@
               </button>
             </div>
           </div>
-          <div class="-mr-2 flex md:hidden">
+          <div class="mr-2 flex md:hidden">
             <!-- Mobile menu button -->
             <DisclosureButton
               class="relative inline-flex items-center justify-center rounded-md bg-wwGreen p-2 text-lime-200 hover:bg-wwLightGreen hover:bg-opacity-75 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
@@ -360,6 +360,7 @@ import { PlusIcon } from '@heroicons/vue/20/solid';
 import { useRouter } from 'vue-router';
 import { wwStore } from '../store/wwStore.js';
 import axios from 'axios';
+import { openDB } from 'idb';
 import { ref, onMounted, reactive, computed } from 'vue';
 
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid';
@@ -426,6 +427,15 @@ const state = reactive({
   price: '',
 });
 
+const navigation = [
+  { name: 'Home', path: '/', current: false },
+  { name: 'Regeln', path: '/rules', current: false },
+  { name: 'Statistik', path: '/stats', current: false },
+  { name: 'Suggestions', path: '/suggestions', current: false },
+];
+
+const userNavigation = [{ name: 'Sign out', href: '#' }];
+
 onMounted(async () => {
   try {
     const { data } = await axios.get('/spieler');
@@ -441,32 +451,36 @@ function addNewAmount(player) {
 }
 
 async function addAmountDB() {
-  try {
-    //Check if selectedStrafe is null or if selectedStrafe.price is null and state.price is empty
-    if (
-      selectedStrafe.value === null ||
-      (selectedStrafe.value.price === null && state.price === '')
-    ) {
-      console.log('Error, nicht alle ausgefüllt');
-    } else {
-      if (selectedStrafe.value.price !== null) {
-        await axios.post('/zahlung', {
-          spielerID: activePlayer.value.s_id,
-          grund: selectedStrafe.value.name,
-          betrag: selectedStrafe.value.price,
-        });
-      } else {
-        await axios.post('/zahlung', {
-          spielerID: activePlayer.value.s_id,
-          grund: selectedStrafe.value.name,
-          betrag: state.price,
-        });
-      }
+  //Check if selectedStrafe is null or if selectedStrafe.price is null and state.price is empty
+  if (
+    selectedStrafe.value === null ||
+    (selectedStrafe.value.price === null && state.price === '')
+  ) {
+    console.log('Error, nicht alle ausgefüllt');
+  } else {
+    try {
+      await axios.post('/zahlung', {
+        spielerID: activePlayer.value.s_id,
+        grund: selectedStrafe.value.name,
+        betrag: selectedStrafe.value.price ? selectedStrafe.value.price : state.price,
+      });
+    } catch (error) {
+      //Weil kein Internet --> Speichern in IndexDB
+      if (!('indexedDB' in window)) return;
 
-      hideModal();
+      let db = await openDB('WW-Mannschaftskasse', 1, {
+        async upgrade(Db, oldVersion, NewVersion, Transaction) {},
+      });
+
+      //Zahlung offline in IndexedDB einfügen
+      await db.add('Zahlungen_ObjectStore', {
+        spielerID: activePlayer.value.s_id,
+        grund: selectedStrafe.value.name,
+        betrag: selectedStrafe.value.price ? selectedStrafe.value.price : state.price,
+      });
     }
-  } catch (error) {
-    console.log(error);
+
+    hideModal();
   }
 }
 
@@ -475,13 +489,4 @@ function hideModal() {
   selectedStrafe.value = null;
   state.price = '';
 }
-
-const navigation = [
-  { name: 'Home', path: '/', current: false },
-  { name: 'Regeln', path: '/rules', current: false },
-  { name: 'Statistik', path: '/stats', current: false },
-  { name: 'Suggestions', path: '/suggestions', current: false },
-];
-
-const userNavigation = [{ name: 'Sign out', href: '#' }];
 </script>

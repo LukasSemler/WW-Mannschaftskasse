@@ -174,6 +174,7 @@
     </Dialog>
   </TransitionRoot>
 
+  <!--Navbar-->
   <div class="min-h-full">
     <Disclosure as="nav" class="bg-wwGreen" v-slot="{ open }">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -207,14 +208,14 @@
               <Menu as="div" class="relative ml-3" v-if="store.getAktiverUser">
                 <div>
                   <MenuButton
-                    class="relative flex max-w-xs items-center rounded-full bg-wwGreen text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
+                    class="relative flex items-center rounded-full bg-wwGreen text-sm text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-wwDarkGreen"
                   >
                     <span class="absolute -inset-1.5" />
                     <span class="sr-only">Open user menu</span>
                     <img
                       class="h-8 w-8 rounded-full"
+                      alt="Profilbild"
                       :src="store.getAktiverUser.profilbild_url"
-                      alt=""
                     />
                   </MenuButton>
                 </div>
@@ -270,6 +271,7 @@
         </div>
       </div>
 
+      <!--Mobile-Menu-->
       <DisclosurePanel class="md:hidden">
         <div class="space-y-1 px-2 pb-3 pt-2 sm:px-3">
           <DisclosureButton
@@ -513,17 +515,15 @@ onMounted(async () => {
 });
 
 async function getData() {
-  const { data } = await axios.get('/zahlung');
-  console.log(data);
-  openAmounts.value = data;
+  const { data: zahlungData } = await axios.get('/zahlung');
+  openAmounts.value = zahlungData;
 
-  const { data: data2 } = await axios.get('/spieler');
-  console.log(data2);
-  sum.value = data2.insgesamtEingezahlteSumme;
+  const { data: spielerData } = await axios.get('/spieler');
+  sum.value = spielerData.insgesamtEingezahlteSumme;
 
   try {
-    const { data: data3 } = await axios.get('/ausgaben');
-    abz.value = data3;
+    const { data: ausgabenData } = await axios.get('/ausgaben');
+    abz.value = ausgabenData;
     abzVorhanden.value = true;
   } catch (error) {
     console.log(error);

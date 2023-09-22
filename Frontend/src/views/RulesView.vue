@@ -311,6 +311,10 @@ const rules = [
     description: 'Dress vergessen',
     price: '5€',
   },
+  {
+    description: 'Springschnur nicht in der Halle',
+    price: '1€',
+  },
 ];
 
 const userNavigation = [{ name: 'Sign out', href: '#' }];

@@ -44,7 +44,11 @@ onMounted(async () => {
   //ServiceWorker probieren zu starten
   if ('serviceWorker' in navigator && location.port != 8080) {
     const ServiceWorker = await navigator.serviceWorker.register('/serviceWorker.js');
-    ServiceWorker.active?.postMessage(JSON.stringify({ type: 'SKIP_WAITING' }));
+
+    ServiceWorker.addEventListener('updatefound', () => {
+      console.log('ServiceWorker updaten...');
+      ServiceWorker.active?.postMessage(JSON.stringify({ type: 'SKIP_WAITING' }));
+    });
   }
 
   //Datenbanksync
@@ -77,7 +81,15 @@ async function Zahlungen_OfflineSync() {
     async upgrade(Db, oldVersion, NewVersion, Transaction) {},
   });
 
-  //Zahlung offline in IndexedDB einfügen
+  //Schauen ob Datenbank bzw. ObjectStore überhaupt vorhanden ist
+  try {
+    const l = await db.getAll('Zahlungen_ObjectStore');
+    if (l.length <= 1) throw new Error('ObjectStore nicht vorhanden ');
+  } catch {
+    return;
+  }
+
+  // Zahlung offline in IndexedDB einfügen
   let zahlungen = await db.getAll('Zahlungen_ObjectStore');
   if (zahlungen.length > 0) {
     for (const { spielerID, grund, betrag } of zahlungen) {
@@ -86,6 +98,13 @@ async function Zahlungen_OfflineSync() {
         grund,
         betrag,
       });
+    }
+  }
+
+  //IndexedDB wieder löschen
+  if (zahlungen.length > 0) {
+    for (const { spielerID, grund, betrag } of zahlungen) {
+      await db.delete('Zahlungen_ObjectStore', 'spielerID');
     }
   }
 }

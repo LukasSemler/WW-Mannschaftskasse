@@ -1,7 +1,7 @@
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
-import { clientsClaim } from 'workbox-core';
 import { NetworkFirst } from 'workbox-strategies';
 import { registerRoute } from 'workbox-routing';
+import { ExpirationPlugin } from 'workbox-expiration';
 
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
@@ -29,19 +29,39 @@ self.addEventListener('message', (event) => {
 //----- Caching (NUR HOMEVIEW)----
 registerRoute(
   ({ url }) => url.pathname.match('/zahlung'),
-  new NetworkFirst({ cacheName: 'ZahlungenCache' }),
+  new NetworkFirst({
+    cacheName: 'ZahlungenCache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+      }),
+    ],
+  }),
 );
 registerRoute(
   ({ url }) => url.pathname.match('/spieler'),
-  new NetworkFirst({ cacheName: 'SpielerCache' }),
+  new NetworkFirst({
+    cacheName: 'SpielerCache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+      }),
+    ],
+  }),
 );
 registerRoute(
   ({ url }) => url.pathname.match('/ausgaben'),
-  new NetworkFirst({ cacheName: 'AusgabenCache' }),
-);
-registerRoute(
-  ({ url }) => url.pathname.match('/.*/'),
-  new NetworkFirst({ cacheName: 'ApplicationCache' }),
+  new NetworkFirst({
+    cacheName: 'AusgabenCache',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+      }),
+    ],
+  }),
 );
 
 // runtimeCaching: [

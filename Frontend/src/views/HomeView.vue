@@ -385,43 +385,16 @@
                     Offen
                   </span>
                 </p>
-                <div class="flex flex-row">
-                  <button
-                    type="button"
-                    class="hidden sm:inline-flex items-center gap-x-2 rounded-md bg-wwGreen px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen mr-2"
-                    v-if="amount.bezahlt === false && store.getAktiverUser"
-                    @click="showModal(amount)"
-                  >
-                    <CheckIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
-                    Bezahlt
-                  </button>
-                  <button
-                    type="button"
-                    class="inline-flex sm:hidden rounded-full bg-wwGreen p-1.5 text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwGreen"
-                    v-if="amount.bezahlt === false && store.getAktiverUser"
-                    @click="showModal(amount)"
-                  >
-                    <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                  </button>
-                  <!-- ----------------------------------------------------------------------- -->
-                  <button
-                    type="button"
-                    class="hidden sm:inline-flex items-center gap-x-2 rounded-md bg-wwRed px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkRed mr-2"
-                    v-if="amount.bezahlt === false && store.getAktiverUser"
-                    @click="deleteZahlung(amount)"
-                  >
-                    <TrashIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
-                    Löschen
-                  </button>
-                  <button
-                    type="button"
-                    class="mr-3 ml-3 inline-flex sm:hidden rounded-full bg-wwRed p-1.5 text-white shadow-sm hover:bg-wwDarkGreen focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-wwRed"
-                    v-if="amount.bezahlt === false && store.getAktiverUser"
-                    @click="deleteZahlung(amount)"
-                  >
-                    <TrashIcon class="h-5 w-5" aria-hidden="true" />
-                  </button>
-                </div>
+                <!-- TODO Change that only a admin can to this -->
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-x-2 rounded-md bg-wwGreen px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen mr-2"
+                  v-if="amount.bezahlt === false && store.getAktiverUser"
+                  @click="showModal(amount)"
+                >
+                  <CheckIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
+                  Bezahlt
+                </button>
               </div>
               <p
                 class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600"
@@ -433,15 +406,11 @@
                 <span class="font-bold text-red-600">{{ amount.remaining }} Tage</span> verbleiben
               </p>
               <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.grund }}</p>
-              <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">
-                Insgesamt <span class="font-bold">{{ amount.offen }}€</span> offen
-              </p>
             </div>
           </li>
         </ul>
         <h1 class="text-center text-xl my-4 text-gray-900" v-else>Alles wurde bezahlt</h1>
         <hr />
-        <!-- --------------------------------------------------------------------------------------------------- -->
         <h2 class="text-lg font-bold mt-5 mx-3">Letzte Ausgaben:</h2>
         <ul role="list" class="divide-y divide-gray-100" v-if="abzVorhanden">
           <li v-for="amount in abz" :key="amount.a_id" class="flex gap-x-4 py-5">
@@ -519,7 +488,6 @@ import {
   CurrencyEuroIcon,
   PlusIcon,
   MinusIcon,
-  TrashIcon,
 } from '@heroicons/vue/20/solid';
 import { ref, onMounted, reactive } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
@@ -560,16 +528,6 @@ async function getData() {
   } catch (error) {
     console.log(error);
     abzVorhanden.value = false;
-  }
-}
-
-async function deleteZahlung(amount) {
-  try {
-    await axios.delete(`/zahlung/${amount.z_id}`);
-
-    await getData();
-  } catch (error) {
-    console.log('Error');
   }
 }
 

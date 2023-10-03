@@ -22,7 +22,7 @@ export default defineConfig({
       injectManifest: {
         rollupFormat: 'iife',
       },
-      srcDir: '/',
+      srcDir: 'src',
       filename: 'serviceWorker.js',
 
       workbox: {

@@ -84,8 +84,11 @@ async function Zahlungen_OfflineSync() {
   //Schauen ob Datenbank bzw. ObjectStore überhaupt vorhanden ist
   try {
     const l = await db.getAll('Zahlungen_ObjectStore');
-    if (l.length <= 1) throw new Error('ObjectStore nicht vorhanden ');
-  } catch {
+    if (l.length <= 0) throw new Error('ObjectStore nicht vorhanden ');
+  } catch (error) {
+    console.log('LKASJDLKAJDLKASJDLKASJDKL');
+    console.log(error);
+
     return;
   }
 

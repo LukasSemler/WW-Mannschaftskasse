@@ -376,15 +376,30 @@
             />
             <div class="flex-auto">
               <div class="flex items-baseline justify-between gap-x-4">
-                <p class="text-sm font-semibold leading-6 text-gray-900">
-                  {{ amount.vorname }} {{ amount.nachname }},
-                  <span class="font-bold mr-2">{{ Number(amount.betrag).toFixed(2) }}€</span>
-                  <span
-                    class="text-red-600 bg-red-50 ring-red-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
+                <div class="flex">
+                  <StarIcon
+                    class="h-5 text-yellow-400"
+                    v-if="amount.nachname == 'Wiltschko'"
+                  ></StarIcon>
+                  <p
+                    :class="[
+                      amount.nachname == 'Wiltschko' ? 'text-yellow-500' : 'text-gray-900',
+                      'texttext-sm font-semibold leading-6',
+                    ]"
                   >
-                    Offen
-                  </span>
-                </p>
+                    {{ amount.vorname }}
+                    {{ amount.nachname }}
+                    <span class="font-bold mr-2 text-gray-900"
+                      >{{ Number(amount.betrag).toFixed(2) }}€</span
+                    >
+                    <span
+                      class="text-red-600 bg-red-50 ring-red-600/20 rounded-md whitespace-nowrap mt-0.5 px-1.5 py-0.5 text-xs font-medium ring-1 ring-inset ml-3'"
+                    >
+                      Offen
+                    </span>
+                  </p>
+                </div>
+
                 <!-- TODO Change that only a admin can to this -->
                 <button
                   type="button"
@@ -488,6 +503,7 @@ import {
   CurrencyEuroIcon,
   PlusIcon,
   MinusIcon,
+  StarIcon,
 } from '@heroicons/vue/20/solid';
 import { ref, onMounted, reactive } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';

@@ -408,7 +408,6 @@
                   @click="showModal(amount)"
                 >
                   <CheckIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
-                  Bezahlt
                 </button>
               </div>
               <p
@@ -419,6 +418,9 @@
               </p>
               <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600" v-else>
                 <span class="font-bold text-red-600">{{ amount.remaining }} Tage</span> verbleiben
+              </p>
+              <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">
+                Insagsammt offen: {{ amount.insgesamt_offene_summe }}€
               </p>
               <p class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{{ amount.grund }}</p>
             </div>
@@ -536,6 +538,8 @@ async function getData() {
 
   const { data: spielerData } = await axios.get('/spieler');
   sum.value = spielerData.insgesamtEingezahlteSumme;
+
+  console.log(zahlungData);
 
   try {
     const { data: ausgabenData } = await axios.get('/ausgaben');

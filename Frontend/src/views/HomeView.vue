@@ -400,15 +400,24 @@
                   </p>
                 </div>
 
-                <!-- TODO Change that only a admin can to this -->
-                <button
-                  type="button"
-                  class="inline-flex items-center gap-x-2 rounded-md bg-wwGreen px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen mr-2"
-                  v-if="amount.bezahlt === false && store.getAktiverUser"
-                  @click="showModal(amount)"
-                >
-                  <CheckIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
-                </button>
+                <div class="flex flex-row">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-x-2 rounded-md bg-wwGreen px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkGreen mr-2"
+                    v-if="amount.bezahlt === false && store.getAktiverUser"
+                    @click="showModal(amount)"
+                  >
+                    <CheckIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-x-2 rounded-md bg-wwRed px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-wwDarkRed mr-2"
+                    v-if="amount.bezahlt === false && store.getAktiverUser"
+                    @click="deleteZahlung(amount)"
+                  >
+                    <TrashIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" />
+                  </button>
+                </div>
               </div>
               <p
                 class="mt-1 line-clamp-2 text-sm leading-6 text-gray-600"
@@ -506,6 +515,7 @@ import {
   PlusIcon,
   MinusIcon,
   StarIcon,
+  TrashIcon,
 } from '@heroicons/vue/20/solid';
 import { ref, onMounted, reactive } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
@@ -595,6 +605,16 @@ async function addAusgabeDB(e) {
     }
   }
 }
+
+async function deleteZahlung(amount) {
+  try {
+    await axios.delete(`/zahlung/${amount.z_id}`);
+    await getData();
+  } catch (error) {
+    console.log('Error');
+  }
+}
+
 // ------------------------------
 
 const openAmounts = ref([]);
